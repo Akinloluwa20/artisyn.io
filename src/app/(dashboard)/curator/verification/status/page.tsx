@@ -40,9 +40,7 @@ export default function CuratorVerificationStatusPage() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const load = useCallback(async () => {
-		setIsLoading(true);
-		setError(null);
+	const fetchStatus = useCallback(async () => {
 		try {
 			setData(await getCuratorVerificationStatus());
 		} catch (err) {
@@ -56,9 +54,20 @@ export default function CuratorVerificationStatusPage() {
 		}
 	}, []);
 
+	const load = useCallback(async () => {
+		setIsLoading(true);
+		setError(null);
+		await fetchStatus();
+	}, [fetchStatus]);
+
 	useEffect(() => {
-		void load();
-	}, [load]);
+		// Initial load only. `isLoading` and `error` already hold their initial
+		// values here, and `fetchStatus` reaches its first setState only after an
+		// await — so nothing is set synchronously in the effect body, which is what
+		// `react-hooks/set-state-in-effect` rejects. The refresh button below keeps
+		// using `load`, which is an event handler and free to reset the flags.
+		void fetchStatus();
+	}, [fetchStatus]);
 
 	return (
 		<AuthGuard>
