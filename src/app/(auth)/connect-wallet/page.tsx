@@ -18,7 +18,18 @@ export default function ConnectWalletPage() {
     lastAttemptedWalletId,
     clearConnectionFeedback,
   } = useWallet();
-  const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
+  // The wallet whose button shows a spinner. Kept as the *pending* wallet and
+  // narrowed to `null` once the connection settles, so the terminal states are
+  // derived during render rather than synced from an effect — which is exactly
+  // what `react-hooks/set-state-in-effect` rejects.
+  const [pendingWallet, setPendingWallet] = useState<string | null>(null);
+  const connectingWallet =
+    connectionStatus === 'error' ||
+    connectionStatus === 'canceled' ||
+    connectionStatus === 'timeout' ||
+    connectionStatus === 'idle'
+      ? null
+      : pendingWallet;
   const [hoveredWallet, setHoveredWallet] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,27 +38,16 @@ export default function ConnectWalletPage() {
     }
   }, [connected, router]);
 
-  useEffect(() => {
-    if (
-      connectionStatus === 'error' ||
-      connectionStatus === 'canceled' ||
-      connectionStatus === 'timeout' ||
-      connectionStatus === 'idle'
-    ) {
-      setConnectingWallet(null);
-    }
-  }, [connectionStatus]);
-
   const handleWalletConnect = async (
     walletId: 'freighter' | 'albedo' | 'lobstr',
   ) => {
     clearConnectionFeedback();
-    setConnectingWallet(walletId);
+    setPendingWallet(walletId);
     try {
       await connect(walletId);
     } catch {
       // Error details live on connectionError / connectionStatus for the UI panel.
-      setConnectingWallet(null);
+      setPendingWallet(null);
     }
   };
 
