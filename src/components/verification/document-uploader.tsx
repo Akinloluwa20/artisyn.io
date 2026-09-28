@@ -38,7 +38,7 @@ type ValidationError = {
   message: string;
 };
 
-function formatFileSize(size: number) {
+export function formatFileSize(size: number) {
   if (size < BYTES_PER_MB) {
     return `${Math.max(1, Math.round(size / 1024))} KB`;
   }
