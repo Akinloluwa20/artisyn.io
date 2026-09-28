@@ -9,6 +9,7 @@ import {
 } from "@/lib/api/applications";
 import { useApplications } from "@/lib/hooks";
 import { useToast } from "@/context/ToastProvider";
+import { SkeletonCard } from "@/components/ui/skeleton-card";
 
 const STATUS_STYLES: Record<ApplicationStatus, string> = {
 	pending: "bg-amber-50 text-amber-700",
@@ -53,7 +54,17 @@ export default function ClientApplicationsPage() {
 			</header>
 
 			{isLoading ? (
-				<p className="text-sm text-gray-500">Loading applications…</p>
+				<div className="space-y-4">
+					{Array.from({ length: 3 }).map((_, i) => (
+						<SkeletonCard
+							key={i}
+							label={`Loading application group ${i + 1}`}
+							lines={2}
+							showAside
+							showMedia
+						/>
+					))}
+				</div>
 			) : error ? (
 				<p role="alert" className="text-sm text-rose-600">
 					{error.message}

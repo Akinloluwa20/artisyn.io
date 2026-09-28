@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useApplications } from "@/lib/hooks";
 import { ARTISAN_SEARCH_RESULTS } from "@/components/search/artisan-search-data";
+import { SkeletonCard } from "@/components/ui/skeleton-card";
 
 const SAVED_STORAGE_KEY = "artisyn.savedArtisans";
 const DEFAULT_SAVED_COUNT = ARTISAN_SEARCH_RESULTS.slice(0, 3).length;
@@ -194,10 +195,11 @@ export default function ClientDashboardPage() {
         </div>
 
         {isLoadingApplications ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm animate-pulse space-y-4">
-            <div className="h-4 bg-slate-200 rounded w-1/3" />
-            <div className="h-4 bg-slate-200 rounded w-1/2" />
-          </div>
+          <SkeletonCard
+            className="rounded-xl border-slate-200 p-6"
+            label="Loading recent applications"
+            lines={2}
+          />
         ) : recentApplications.length > 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100 overflow-hidden">
             {recentApplications.map((app) => {

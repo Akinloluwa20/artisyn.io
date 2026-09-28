@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useJobs } from "@/lib/hooks";
+import { SkeletonList } from "@/components/ui/skeleton-list";
 
 interface CompletedJob {
   id: string;
@@ -26,7 +27,7 @@ const CompletedJobsList = () => {
   const totalPages = data?.totalPages ?? 1;
 
   if (isLoading) {
-    return <div className="py-10 text-center text-sm text-gray-500">Loading completed jobs...</div>;
+    return <SkeletonList className="mt-8" count={3} label="Loading completed jobs" />;
   }
 
   if (error) {

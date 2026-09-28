@@ -9,11 +9,12 @@ import {
   Briefcase,
   CheckCircle,
   AlertCircle,
-  Loader2,
 } from 'lucide-react';
 import bgImg from '../listings/(assets)/bg.png';
 import { jobs } from '../listings/dummyjobs';
 import { JobStatusBadge } from '@/components/jobs/job-status-badge';
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton-card';
+import { SkeletonList } from '@/components/ui/skeleton-list';
 import {
   fetchDashboardMetrics,
   type DashboardMetrics,
@@ -25,13 +26,12 @@ function MetricsSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div
+        <SkeletonCard
           key={i}
-          className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm animate-pulse"
-        >
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-3" />
-          <div className="h-8 bg-gray-200 rounded w-3/4" />
-        </div>
+          label={`Loading metric ${i + 1}`}
+          lines={1}
+          showAside
+        />
       ))}
     </div>
   );
@@ -39,11 +39,11 @@ function MetricsSkeleton() {
 
 function ProfilePerformanceSkeleton() {
   return (
-    <div className="divide-y divide-gray-200 animate-pulse">
+    <div className="divide-y divide-gray-200">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="p-4">
-          <div className="h-3 bg-gray-200 rounded w-1/2 mb-2" />
-          <div className="h-5 bg-gray-200 rounded w-1/3" />
+        <div key={i} className="p-4 space-y-2">
+          <Skeleton className="h-3 w-1/2" />
+          <Skeleton className="h-5 w-1/3" />
         </div>
       ))}
     </div>
@@ -376,9 +376,20 @@ export default function ArtisanDashboard() {
             {/* Jobs List */}
             <div className="divide-y divide-gray-200">
               {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
-                </div>
+                <SkeletonList
+                  className="space-y-0 divide-y divide-gray-200 rounded-none"
+                  count={3}
+                  label="Loading active jobs"
+                  renderItem={() => (
+                    <div className="flex gap-3 p-4">
+                      <Skeleton className="size-12 shrink-0 rounded-lg" />
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <Skeleton className="h-4 w-1/3" />
+                        <Skeleton className="h-3 w-1/2" />
+                      </div>
+                    </div>
+                  )}
+                />
               ) : activeJobsData.length === 0 ? (
                 <div className="p-6 text-center text-sm text-gray-400">
                   No active jobs at the moment.
