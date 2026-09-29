@@ -1,6 +1,7 @@
 'use client';
 
 import { useProfileCompletion } from '@/lib/hooks';
+import { SkeletonCard } from '@/components/ui/skeleton-card';
 
 export function ProfileCompletionWidget() {
   const { data, isLoading, error } = useProfileCompletion();
@@ -13,14 +14,13 @@ export function ProfileCompletionWidget() {
             Profile Completion
           </h2>
         </div>
-        <div className="p-4 space-y-3 animate-pulse">
-          <div className="h-4 bg-gray-100 rounded w-full" />
-          <div className="h-2 bg-gray-100 rounded-full w-full" />
-          <div className="space-y-2 mt-2">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-4 bg-gray-100 rounded w-3/4" />
-            ))}
-          </div>
+        <div className="p-4">
+          <SkeletonCard
+            className="border-0 bg-transparent p-0 shadow-none"
+            label="Loading profile completion"
+            lines={4}
+            showMedia={false}
+          />
         </div>
       </div>
     );

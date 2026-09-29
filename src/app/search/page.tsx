@@ -21,6 +21,7 @@ import { PaginationControl } from "@/components/search/pagination-control";
 import { SearchResultCard } from "@/components/search/search-result-card";
 import { SortControl, type SearchSortValue } from "@/components/search/sort-control";
 import { SuggestionsDropdown } from "@/components/search/suggestions-dropdown";
+import { Skeleton, SkeletonCard } from "@/components/ui/skeleton-card";
 
 const PAGE_SIZE = 6;
 const DEFAULT_SORT: SearchSortValue = "relevance";
@@ -92,8 +93,18 @@ function SearchPageFallback() {
   return (
     <main className="min-h-screen bg-[#F8FAFC] px-4 py-8 text-[#020817] md:px-6 md:py-10">
       <section className="mx-auto flex max-w-7xl flex-col gap-6">
-        <div className="rounded-xl border border-[#E2E8F0] bg-white p-6 md:p-7">
-          <p className="text-sm text-[#64748B]">Loading artisan search...</p>
+        <Skeleton className="h-11 w-full rounded-md" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard
+              key={i}
+              className="rounded-xl border-[#E2E8F0] p-5"
+              label={`Loading artisan result ${i + 1}`}
+              lines={2}
+              showAside
+              showMedia
+            />
+          ))}
         </div>
       </section>
     </main>

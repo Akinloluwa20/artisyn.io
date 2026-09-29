@@ -8,7 +8,6 @@ import {
   Clock,
   AlertCircle,
   ArrowUpRight,
-  Loader2,
   ReceiptText,
 } from "lucide-react";
 import {
@@ -19,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StatCard } from "@/components/ui/stat-card";
+import { Skeleton, SkeletonCard } from "@/components/ui/skeleton-card";
 import { useEarningsSummary, useEarningsTransactions } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import type {
@@ -167,13 +167,12 @@ function SummaryCardsSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div
+        <SkeletonCard
           key={i}
-          className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm animate-pulse"
-        >
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-3" />
-          <div className="h-8 bg-gray-200 rounded w-3/4" />
-        </div>
+          className="p-6"
+          label={`Loading summary ${i + 1}`}
+          lines={1}
+        />
       ))}
     </div>
   );
@@ -181,17 +180,17 @@ function SummaryCardsSkeleton() {
 
 function TransactionRowSkeleton() {
   return (
-    <div className="flex items-center justify-between gap-4 p-4 animate-pulse">
+    <div className="flex items-center justify-between gap-4 p-4">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className="w-10 h-10 rounded-lg bg-gray-200 flex-shrink-0" />
+        <Skeleton className="size-10 shrink-0 rounded-lg" />
         <div className="flex-1 min-w-0 space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-3/4" />
-          <div className="h-3 bg-gray-200 rounded w-1/2" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-3 w-1/2" />
         </div>
       </div>
       <div className="flex-shrink-0 flex flex-col items-end gap-1">
-        <div className="h-5 bg-gray-200 rounded w-20" />
-        <div className="h-4 bg-gray-200 rounded w-16" />
+        <Skeleton className="h-5 w-20" />
+        <Skeleton className="h-4 w-16" />
       </div>
     </div>
   );
@@ -481,20 +480,6 @@ export default function EarningsPage() {
                     Load more
                   </button>
                 )}
-            </div>
-          )}
-
-          {/* Loading spinner for full-page spinner fallback */}
-          {txLoading && (
-            <div
-              className="flex items-center justify-center py-8"
-              aria-live="polite"
-              aria-label="Loading transactions"
-            >
-              <Loader2
-                className="w-6 h-6 text-gray-400 animate-spin"
-                aria-hidden="true"
-              />
             </div>
           )}
         </div>

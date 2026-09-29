@@ -3,6 +3,7 @@
 import Image from "next/image";
 import bgImg from "../(assets)/bg.png";
 import { useApplications } from "@/lib/hooks";
+import { SkeletonList } from "@/components/ui/skeleton-list";
 
 interface Application {
   id: string;
@@ -28,7 +29,7 @@ const AppliedJobsList = () => {
   }));
 
   if (isLoading) {
-    return <div className="py-10 text-center text-sm text-gray-500">Loading applications...</div>;
+    return <SkeletonList className="mt-8" count={3} label="Loading applications" />;
   }
 
   if (error) {
