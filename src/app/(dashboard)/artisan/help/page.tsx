@@ -3,7 +3,11 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Search, ChevronDown, ChevronUp, MessageCircle, FileText, Mail } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, MessageCircle, FileText, Mail, Ticket } from "lucide-react";
+import {
+	TicketForm,
+	type SupportTicketPayload,
+} from "@/components/support/ticket-form";
 
 const faqs = [
 	{
@@ -92,9 +96,17 @@ export default function HelpPage() {
 	const [query, setQuery] = useState("");
 	const [topic, setTopic] = useState(ALL_TOPICS);
 	const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+	const [showTicketForm, setShowTicketForm] = useState(false);
 
 	const toggle = (key: string) =>
 		setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
+
+	// No support API exists yet. Swap this for the real endpoint when it
+	// lands — the form handles validation and feedback on its own.
+	const handleSubmitTicket = async (ticket: SupportTicketPayload): Promise<void> => {
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+		console.log("Support ticket submitted:", ticket);
+	};
 
 	const filtered = faqs
 		.map((section) => ({
@@ -200,9 +212,19 @@ export default function HelpPage() {
 				<h2 className="text-lg font-semibold text-gray-900 mb-1">Still need help?</h2>
 				<p className="text-sm text-gray-600 mb-5">Our support team is here to assist you.</p>
 				<div className="flex flex-wrap gap-3">
+					<button
+						type="button"
+						onClick={() => setShowTicketForm((open) => !open)}
+						aria-expanded={showTicketForm}
+						aria-controls="help-ticket-form"
+						className="flex items-center gap-2 bg-[#605DEC] text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-[#4f4cd4] transition-colors"
+					>
+						<Ticket className="w-4 h-4" />
+						Submit a Support Ticket
+					</button>
 					<Link
 						href="/contact"
-						className="flex items-center gap-2 bg-[#605DEC] text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-[#4f4cd4] transition-colors"
+						className="flex items-center gap-2 bg-white text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
 					>
 						<Mail className="w-4 h-4" />
 						Contact Support
@@ -225,6 +247,21 @@ export default function HelpPage() {
 					</a>
 				</div>
 			</div>
+
+			{/* Support ticket form — the same component used on /contact */}
+			{showTicketForm && (
+				<section
+					id="help-ticket-form"
+					aria-label="Support ticket form"
+					className="mt-6 bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
+				>
+					<h2 className="text-lg font-semibold text-gray-900 mb-1">Open a support ticket</h2>
+					<p className="text-sm text-gray-600 mb-5">
+						Tell us what is going wrong and how urgent it is, and we will route it to the right team.
+					</p>
+					<TicketForm onSubmit={handleSubmitTicket} />
+				</section>
+			)}
 		</div>
 	);
 }

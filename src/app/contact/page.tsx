@@ -1,48 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Phone, MapPin, Send, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import {
+  TicketForm,
+  type SupportTicketPayload,
+} from "@/components/support/ticket-form";
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<
-    "idle" | "success" | "error"
-  >("idle");
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus("idle");
-
-    // Simulate form submission (replace with actual API call)
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Form submitted:", formData);
-      setSubmitStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch {
-      setSubmitStatus("error");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmitTicket = async (
+    ticket: SupportTicketPayload,
+  ): Promise<void> => {
+    // No support API exists yet. Swap this for the real endpoint when it
+    // lands — the form handles validation and feedback on its own.
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    console.log("Support ticket submitted:", ticket);
   };
 
   return (
@@ -167,128 +140,15 @@ export default function ContactPage() {
                 Send Us a Message
               </h2>
               <p className="text-gray-400 mb-8">
-                Fill out the form below and we&apos;ll get back to you as soon
-                as possible.
+                Give us a little context and we&apos;ll route your message to the
+                right team. We&apos;ll get back to you within 24-48 hours.
               </p>
 
-              {submitStatus === "success" && (
-                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                  <p className="text-green-400 text-sm">
-                    ✓ Thank you! Your message has been sent successfully.
-                    We&apos;ll respond within 24-48 hours.
-                  </p>
-                </div>
-              )}
-
-              {submitStatus === "error" && (
-                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                  <p className="text-red-400 text-sm">
-                    ✗ Something went wrong. Please try again or email us
-                    directly at support@artisyn.io
-                  </p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-300 mb-2"
-                    >
-                      Full Name *
-                    </label>
-                    <Input
-                      id="name"
-                      name="name"
-                      type="text"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      placeholder="John Doe"
-                      className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-300 mb-2"
-                    >
-                      Email Address *
-                    </label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="john@example.com"
-                      className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                  >
-                    Subject *
-                  </label>
-                  <Input
-                    id="subject"
-                    name="subject"
-                    type="text"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    placeholder="How can we help you?"
-                    className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                  >
-                    Message *
-                  </label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    placeholder="Tell us more about your inquiry..."
-                    rows={6}
-                    className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between pt-4">
-                  <p className="text-gray-500 text-sm">* Required fields</p>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-[#605DEC] hover:bg-[#605DEC]/90 text-white px-8 py-3 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        Send Message
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
+              <TicketForm
+                variant="dark"
+                onSubmit={handleSubmitTicket}
+                submitLabel="Send Message"
+              />
             </div>
           </div>
         </div>
