@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useMemo, useState } from 'react';
 
 import Image from 'next/image';
-import type { Job } from '../dummyjobs';
+import type { Job } from '@/lib/api/jobs';
 import JobFilter from './JobFilters';
 import Link from 'next/link';
 import bgImg from '../(assets)/bg.png';

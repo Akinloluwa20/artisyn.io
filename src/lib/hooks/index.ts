@@ -4,4 +4,5 @@ export { useQuery } from "./useQuery";
 export { useMutation } from "./useMutation";
 export { useJobs } from "./useJobs";
 export { useApplications, useCreateApplication } from "./useApplications";
-export { useProfile, useSaveProfile } from "./useProfile";
+export { useEarningsSummary, useEarningsTransactions } from "./useEarnings";
+export { useProfile, useSaveProfile, useProfileCompletion } from "./useProfile";

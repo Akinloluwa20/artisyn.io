@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { Search, ChevronDown, ChevronUp, MessageCircle, FileText, Mail } from "lucide-react";
 
@@ -67,8 +68,29 @@ const faqs = [
 	},
 ];
 
+const ALL_TOPICS = "All topics";
+
+function highlightMatches(text: string, query: string): ReactNode {
+	const term = query.trim();
+	if (!term) return text;
+
+	const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const parts = text.split(new RegExp(`(${escapedTerm})`, "gi"));
+
+	return parts.map((part, index) =>
+		part.toLowerCase() === term.toLowerCase() ? (
+			<mark key={`${part}-${index}`} className="rounded bg-[#E6E4FF] px-0.5 text-[#4F4CD4]">
+				{part}
+			</mark>
+		) : (
+			part
+		)
+	);
+}
+
 export default function HelpPage() {
 	const [query, setQuery] = useState("");
+	const [topic, setTopic] = useState(ALL_TOPICS);
 	const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
 	const toggle = (key: string) =>
@@ -79,9 +101,10 @@ export default function HelpPage() {
 			...section,
 			items: section.items.filter(
 				(item) =>
-					!query ||
-					item.question.toLowerCase().includes(query.toLowerCase()) ||
-					item.answer.toLowerCase().includes(query.toLowerCase())
+					(topic === ALL_TOPICS || section.category === topic) &&
+					(!query ||
+						item.question.toLowerCase().includes(query.toLowerCase()) ||
+						item.answer.toLowerCase().includes(query.toLowerCase()))
 			),
 		}))
 		.filter((section) => section.items.length > 0);
@@ -94,15 +117,37 @@ export default function HelpPage() {
 			</div>
 
 			{/* Search */}
-			<div className="relative mb-8">
-				<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-				<input
-					type="text"
-					placeholder="Search help articles..."
-					value={query}
-					onChange={(e) => setQuery(e.target.value)}
-					className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#605DEC] focus:border-transparent"
-				/>
+			<div className="mb-8 space-y-3">
+				<div className="relative">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+					<label htmlFor="help-search" className="sr-only">
+						Search help articles
+					</label>
+					<input
+						id="help-search"
+						type="search"
+						placeholder="Search help articles..."
+						value={query}
+						onChange={(e) => setQuery(e.target.value)}
+						className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#605DEC] focus:border-transparent"
+					/>
+				</div>
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+					<label htmlFor="help-topic" className="text-sm font-medium text-gray-700">
+						Filter by topic
+					</label>
+					<select
+						id="help-topic"
+						value={topic}
+						onChange={(e) => setTopic(e.target.value)}
+						className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#605DEC]"
+					>
+						<option>{ALL_TOPICS}</option>
+						{faqs.map((section) => (
+							<option key={section.category}>{section.category}</option>
+						))}
+					</select>
+				</div>
 			</div>
 
 			{/* FAQ Sections */}
@@ -123,7 +168,9 @@ export default function HelpPage() {
 												onClick={() => toggle(key)}
 												className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
 											>
-												<span className="text-sm font-medium text-gray-900">{item.question}</span>
+														<span className="text-sm font-medium text-gray-900">
+															{highlightMatches(item.question, query)}
+														</span>
 												{isOpen ? (
 													<ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0 ml-3" />
 												) : (
@@ -132,7 +179,7 @@ export default function HelpPage() {
 											</button>
 											{isOpen && (
 												<div className="px-5 pb-4 text-sm text-gray-600 leading-relaxed">
-													{item.answer}
+															{highlightMatches(item.answer, query)}
 												</div>
 											)}
 										</div>

@@ -3,7 +3,7 @@ import type { Role } from "@/context/AuthProvider";
 /** Post-onboarding dashboard destinations, keyed by user role. */
 export const ROLE_DASHBOARD_ROUTES: Record<Role, string> = {
   artisan: "/artisan/dashboard",
-  client: "/client",
+  client: "/client/dashboard",
 };
 
 /** Public landing route used when a role cannot be determined. */

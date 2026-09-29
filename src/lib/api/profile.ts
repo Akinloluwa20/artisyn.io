@@ -8,6 +8,16 @@ import { apiClient } from "./client";
 export type ProfilePayload = Record<string, unknown>;
 export type ProfileResponse = Record<string, unknown>;
 
+export interface ProfileCompletionField {
+  label: string;
+  done: boolean;
+}
+
+export interface ProfileCompletionResponse {
+  percentage: number;
+  fields: ProfileCompletionField[];
+}
+
 export async function getProfile(): Promise<ProfileResponse> {
   return apiClient.get<ProfileResponse>("/api/profile", {
     cache: "no-store",
@@ -18,4 +28,10 @@ export async function saveProfile<T extends object>(
   payload: T
 ): Promise<ProfileResponse> {
   return apiClient.post<ProfileResponse>("/api/profile", payload);
+}
+
+export async function getProfileCompletion(): Promise<ProfileCompletionResponse> {
+  return apiClient.get<ProfileCompletionResponse>("/api/profile/completion", {
+    cache: "no-store",
+  });
 }

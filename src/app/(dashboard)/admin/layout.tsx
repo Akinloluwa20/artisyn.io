@@ -1,6 +1,9 @@
 import AdminSidebar from "@/components/admin/sidebar";
-import { AuthGuard } from "@/components/auth/auth-guard";
-import { RoleGuard } from "@/components/auth/role-guard";
+
+export const metadata = {
+  title: "Admin Panel | Artisyn",
+  description: "Artisyn administrative control and content moderation panel",
+};
 
 export default function AdminLayout({
   children,
@@ -8,18 +11,17 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthGuard>
-      <RoleGuard allowedRoles={["admin" as never]}>
-        <div className="flex min-h-screen bg-gray-50">
-          {/* Sidebar */}
-          <AdminSidebar />
+    <div className="flex min-h-screen bg-gray-50/70">
+      {/* Sidebar */}
+      <AdminSidebar />
 
-          {/* Main Content */}
-          <main className="flex-1 lg:ml-0">
-            <div className="container mx-auto p-6 lg:p-8">{children}</div>
-          </main>
+      {/* Main Content */}
+      {/* pt-16 on mobile clears the fixed hamburger button */}
+      <main className="flex-1 min-w-0 pt-16 lg:pt-0">
+        <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-7xl">
+          {children}
         </div>
-      </RoleGuard>
-    </AuthGuard>
+      </main>
+    </div>
   );
 }

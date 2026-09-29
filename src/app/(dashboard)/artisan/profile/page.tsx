@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useProfile, useSaveProfile } from '@/lib/hooks';
 import type { ProfileResponse } from '@/lib/api/profile';
+import { ProfileCompletionWidget } from '@/components/profile/profile-completion-widget';
 
 const skillCategories = [
   'Carpentry',
@@ -130,7 +131,6 @@ export default function ArtisanProfilePage() {
     profileViews: 124,
     rating: 4.5,
     completedJobs: 12,
-    profileCompletion: 80,
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,19 +155,6 @@ export default function ArtisanProfilePage() {
   };
 
   const displayImage = previewUrl ?? formData.profileImageUrl;
-
-  const completionItems = [
-    { label: 'Profile photo', done: !!displayImage },
-    { label: 'Full name', done: !!formData.fullName },
-    { label: 'Bio', done: formData.bio.trim().length > 20 },
-    { label: 'Skill category', done: !!formData.skillCategory },
-    { label: 'Location', done: !!formData.state && !!formData.city },
-    { label: 'Experience', done: !!formData.yearsOfExperience },
-  ];
-  const completionScore = Math.round(
-    (completionItems.filter((i) => i.done).length / completionItems.length) *
-      100,
-  );
 
   return (
     <div className="w-full">
@@ -479,50 +466,7 @@ export default function ArtisanProfilePage() {
         {/* Right Column */}
         <div className="space-y-6">
           {/* Profile Completion */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Profile Completion
-              </h2>
-            </div>
-            <div className="p-4 space-y-4">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-gray-600">Progress</span>
-                <span className="text-sm font-semibold text-[#605DEC]">
-                  {completionScore}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-100 rounded-full h-2">
-                <div
-                  className="bg-[#605DEC] h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${completionScore}%` }}
-                />
-              </div>
-              <ul className="space-y-2 mt-2">
-                {completionItems.map((item) => (
-                  <li
-                    key={item.label}
-                    className="flex items-center gap-2 text-sm"
-                  >
-                    <span
-                      className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        item.done
-                          ? 'bg-green-100 text-green-600'
-                          : 'bg-gray-100 text-gray-400'
-                      }`}
-                    >
-                      {item.done ? '✓' : '○'}
-                    </span>
-                    <span
-                      className={item.done ? 'text-gray-700' : 'text-gray-400'}
-                    >
-                      {item.label}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <ProfileCompletionWidget />
 
           {/* Profile Visibility Stats */}
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm">

@@ -63,3 +63,32 @@ export async function GET() {
   }
 
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const { id, status } = await req.json();
+    if (!id || !['pending', 'accepted', 'rejected'].includes(status)) {
+      return new Response(JSON.stringify({ message: 'Invalid id or status' }), { status: 400 });
+    }
+
+    const dataPath = path.join(process.cwd(), 'data', 'applications.json');
+    let apps: Application[] = [];
+    try {
+      apps = JSON.parse((await fs.readFile(dataPath, 'utf8')) || '[]') as Application[];
+    } catch {
+      apps = [];
+    }
+
+    const app = apps.find((a) => a.id === id);
+    if (!app) {
+      return new Response(JSON.stringify({ message: 'Application not found' }), { status: 404 });
+    }
+
+    app.status = status;
+    await fs.writeFile(dataPath, JSON.stringify(apps, null, 2), 'utf8');
+
+    return new Response(JSON.stringify(app), { status: 200 });
+  } catch {
+    return new Response(JSON.stringify({ message: 'Server error' }), { status: 500 });
+  }
+}
