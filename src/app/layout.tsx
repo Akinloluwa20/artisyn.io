@@ -4,6 +4,8 @@ import "./globals.css";
 import { WalletProvider } from "../context/WalletProvider";
 import { AuthProvider } from "../context/AuthProvider";
 import { ToastProvider } from "../context/ToastProvider";
+import { StellarNetworkBadge } from "../components/ui/network-badge";
+import { getStellarConfig } from "../lib/stellar-config";
 
 const satoshi = localFont({
   src: [
@@ -36,6 +38,10 @@ export const metadata: Metadata = {
   description: "Connect your wallet and join the decentralized ecosystem",
 };
 
+// Fail fast: an unsupported or inconsistent Stellar configuration throws during
+// render/build instead of silently shipping a mismatched network (issue #204).
+getStellarConfig();
+
 export default function RootLayout({
   children,
 }: {
@@ -47,6 +53,8 @@ export default function RootLayout({
         <ToastProvider>
           <WalletProvider>
             <AuthProvider>{children}</AuthProvider>
+            {/* Non-production only; renders null in production builds. */}
+            <StellarNetworkBadge className="fixed bottom-4 right-4 z-50" />
           </WalletProvider>
         </ToastProvider>
       </body>
