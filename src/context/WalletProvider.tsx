@@ -11,6 +11,7 @@ import React, {
 import { Horizon, Networks } from "@stellar/stellar-sdk";
 import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
 import { kit as getKitInstance } from "@/lib/stellar-wallets-kit";
+import { logout } from "@/lib/auth/client";
 
 const Server = Horizon.Server;
 
@@ -329,6 +330,13 @@ export function WalletProvider({
   const disconnect = useCallback(async () => {
     connectGeneration.current += 1;
     await getKitInstance().disconnect();
+    // Revoke the server session too: disconnecting a wallet must not leave a
+    // valid auth cookie behind.
+    try {
+      await logout();
+    } catch {
+      /* best-effort; the cookie is also cleared on the next expiry */
+    }
     setConnected(false);
     setPublicKey(undefined);
     setWalletName(undefined);

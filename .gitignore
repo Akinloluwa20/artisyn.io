@@ -42,3 +42,5 @@ next-env.d.ts
 
 package-lock.json
 yarn.lock
+# server-owned auth role store (dev fallback)
+.data/
