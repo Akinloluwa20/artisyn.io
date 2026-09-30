@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Clock, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fetchAvailability, saveAvailability } from "@/lib/api/availability";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,8 +36,6 @@ const DAYS: { key: DayKey; label: string; short: string }[] = [
   { key: "sunday",    label: "Sunday",    short: "Sun" },
 ];
 
-const STORAGE_KEY = "artisan_availability";
-
 const DEFAULT_SCHEDULE: AvailabilitySchedule = {
   monday:    { enabled: true,  start: "09:00", end: "17:00" },
   tuesday:   { enabled: true,  start: "09:00", end: "17:00" },
@@ -62,32 +61,44 @@ function isEndAfterStart(start: string, end: string): boolean {
   return end > start;
 }
 
-function loadFromStorage(): AvailabilitySchedule {
-  if (typeof window === "undefined") return DEFAULT_SCHEDULE;
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_SCHEDULE;
-    const parsed = JSON.parse(raw) as AvailabilitySchedule;
-    return { ...DEFAULT_SCHEDULE, ...parsed };
-  } catch {
-    return DEFAULT_SCHEDULE;
-  }
-}
-
-function hasSavedSchedule(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(STORAGE_KEY) !== null;
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AvailabilityEditor() {
   // Lazy initialisers run once on mount — no useEffect needed,
   // which avoids the react-hooks/set-state-in-effect lint error.
-  const [schedule, setSchedule] = useState<AvailabilitySchedule>(loadFromStorage);
+  const [schedule, setSchedule] = useState<AvailabilitySchedule>(DEFAULT_SCHEDULE);
   const [errors, setErrors] = useState<Partial<Record<DayKey, string>>>({});
-  const [saved, setSaved] = useState<boolean>(hasSavedSchedule);
+  const [saved, setSaved] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setLoadError(null);
+      try {
+        const remote = await fetchAvailability();
+        if (cancelled) return;
+        if (remote) {
+          setSchedule({ ...DEFAULT_SCHEDULE, ...remote });
+          setSaved(true);
+        }
+      } catch {
+        if (!cancelled) setLoadError("Could not load your availability. Please retry.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // ── Handlers ──
 
@@ -101,6 +112,7 @@ export default function AvailabilityEditor() {
       delete next[day];
       return next;
     });
+    setDirty(true);
   }
 
   function updateTime(day: DayKey, field: "start" | "end", value: string) {
@@ -113,6 +125,7 @@ export default function AvailabilityEditor() {
       delete next[day];
       return next;
     });
+    setDirty(true);
   }
 
   function validate(): boolean {
@@ -127,21 +140,46 @@ export default function AvailabilityEditor() {
     return Object.keys(newErrors).length === 0;
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!validate()) return;
+    setSaving(true);
+    setSaveError(null);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(schedule));
+      await saveAvailability(schedule);
       setSaved(true);
+      setDirty(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
     } catch {
-      // localStorage unavailable — silently degrade
+      setSaveError("Could not save your availability. Please retry.");
+    } finally {
+      setSaving(false);
     }
   }
 
   // ── Summary ──
 
   const enabledDays = DAYS.filter(({ key }) => schedule[key].enabled);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <p className="text-sm text-gray-500" role="status">
+          Loading your availability…
+        </p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="space-y-6">
+        <p className="text-sm text-red-500" role="alert">
+          {loadError}
+        </p>
+      </div>
+    );
+  }
 
   // ── Render ──
 
@@ -249,6 +287,7 @@ export default function AvailabilityEditor() {
         <button
           type="button"
           onClick={handleSave}
+          disabled={saving}
           className={cn(
             "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
             "bg-[#605DEC] text-white hover:bg-[#4f4cdb] active:scale-95",
@@ -267,6 +306,16 @@ export default function AvailabilityEditor() {
             </>
           )}
         </button>
+
+        {dirty && !saving && (
+          <p className="text-sm text-amber-600 font-medium">Unsaved changes</p>
+        )}
+
+        {saveError && (
+          <p className="text-sm text-red-500 font-medium" role="alert">
+            {saveError}
+          </p>
+        )}
 
         {saveSuccess && (
           <p className="text-sm text-green-600 font-medium animate-in fade-in duration-300">
