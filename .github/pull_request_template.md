@@ -3,8 +3,9 @@
 Mark with an `x` all the checkboxes that apply (like `[x]`)
 
 - [ ] Closes #
-- [ ] Added tests (if necessary)
-- [ ] Run tests
+- [ ] Added tests for new/changed critical paths (API client, guards, providers, forms)
+- [ ] Run tests (`pnpm test`) and they pass locally
+- [ ] Run lint and type checks (`pnpm lint`, `pnpm typecheck`)
 - [ ] Run formatting
 - [ ] Evidence attached
 - [ ] Commented the code

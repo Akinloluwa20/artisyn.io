@@ -34,5 +34,11 @@ jobs:
       - name: Linting
         run: pnpm lint
 
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Unit and component tests
+        run: pnpm test:coverage
+
       - name: Build Frontend
         run: pnpm build

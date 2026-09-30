@@ -211,15 +211,27 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The landing
 | --- | --- |
 | `pnpm dev` | Start the development server |
 | `pnpm lint` | Run ESLint |
+| `pnpm typecheck` | Type-check the project with `tsc --noEmit` |
+| `pnpm test` | Run the unit and component test suite once |
+| `pnpm test:watch` | Re-run tests on change while developing |
+| `pnpm test:coverage` | Run tests with the critical-path coverage floor enforced |
 | `pnpm build` | Create a production build |
 | `pnpm start` | Serve the production build |
+
+### Testing
+
+The test stack is [Vitest](https://vitest.dev/) with React Testing Library and `jsdom`, configured in `vitest.config.mts` and `src/test/setup.ts`. Tests live next to the code they cover as `*.test.ts` / `*.test.tsx` files. See [TESTING.md](./TESTING.md) for the full conventions; in short:
+
+- Run `pnpm test` before opening a pull request (CI runs `pnpm lint`, `pnpm typecheck`, `pnpm test:coverage`, and `pnpm build`).
+- Mock the network at the request boundary — stub `fetch` or the wallet kit — never the module under test, and never depend on a live API, a real wallet, or wall-clock timing.
+- Critical shared modules (the API client, auth/role guards, the wallet and onboarding providers, and the form-submission hook) are expected to keep regression coverage. `pnpm test:coverage` fails if the floor drops.
 
 ## Contributing
 
 1. Choose an open issue and read its requirements, dependencies, and submission guidelines.
 2. Create the branch requested by the issue, or use a short branch name that describes the task when none is provided.
 3. Make the smallest complete change that satisfies the acceptance criteria.
-4. Run the relevant verification commands, including `pnpm lint` and `pnpm build` for frontend changes when applicable.
+4. Run the relevant verification commands. For frontend changes this means `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`.
 5. Open a focused pull request with a summary, verification notes, and any known limitations.
 6. Link the pull request to its issue with a closing keyword such as `Closes #123`.
 
