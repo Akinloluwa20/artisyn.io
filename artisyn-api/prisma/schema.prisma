@@ -1,1 +1,50 @@
-Z2VuZXJhdG9yIGNsaWVudCB7CiAgcHJvdmlkZXIgPSAicHJpc21hLWNsaWVudC1qcyIKfQoKZGF0YXNvdXJjZSBkYiB7CiAgcHJvdmlkZXIgPSAicG9zdGdyZXNxbCIKICB1cmwgICAgICA9IGVudigiREFUQUJBU0VfVVJMIikKfQoKZW51bSBBdmFpbGFiaWxpdHlEYXlPZldlZWsgewogIE1PTkRBWQogIFRV RVNEQVkKICBXRURORVNEQVkKICBUSERSU0RBWQogIEZSSURBWQogIFNBVFVSUEFZCiAgU1VOREFZCn0KCm1vZGVsIEFydGlzYW4gewogIGlkICAgICAgICAgICBTdHJpbmcgICAgICAgICAgICAgICAgQGlkIEBkZWZhdWx0KGN1aWQoKSkKICBlbWFpbCAgICAgICAgU3RyaW5nICAgICAgICAgICAgICAgIEB1bmlxdWUKICBkaXNwbGF5TmFtZSBTdHJpbmc/CiAgdGltZXpvbmUgICAgIFN0cmluZyAgICAgICAgICAgICAgICBAZGVmYXVsdCgiVVRDIikKICBhdmFpbGFiaWxpdHkgIEFydGlzYW5BdmFpbGFiaWxpdHk/CiAgY3JlYXRlZEF0ICAgIERhdGVUaW1lICAgICAgICAgICAgICBAZGVmYXVsdChub3coKSkKICB1cGRhdGVkQXQgICAgRGF0ZVRpbWUgICAgICAgICAgICAgIEB1cGRhdGVkQXQKfQoKbW9kZWwgQXJ0aXNhbkF2YWlsYWJpbGl0eSB7CiAgaWQgICAgICAgIFN0cmluZyAgICAgICAgICAgICAgICAgQGlkIEBkZWZhdWx0KGN1aWQoKSkKICBhcnRpc2FuSWQgU3RyaW5nICAgICAgICAgICAgICAgICBAdW5pcXVlCiAgYXJ0aXNhbiAgIEFydGlzYW4gICAgICAgICAgICAgICAgIEByZWxhdGlvbihmaWVsZHM6IFthcnRpc2FuSWRdLCByZWZlcmVuY2VzOiBbaWRdLCBvbkRlbGV0ZTogQ2FzY2FkZSkKICB0aW1lem9uZSAgIFN0cmluZyAgICAgICAgICAgICAgICAgQGRlZmF1bHQoIlVUQyIpCiAgaW50ZXJ2YWxzICBBdmFpbGFiaWxpdHlJbnRlcnZhbFtdCiAgY3JlYXRlZEF0ICBEYXRlVGltZSAgICAgICAgICAgICAgIEBkZWZhdWx0KG5vdygpKQogIHVwZGF0ZWRBdCAgRGF0ZVRpbWUgICAgICAgICAgICAgICBAdXBkYXRlZEF0Cn0KCm1vZGVsIEF2YWlsYWJpbGl0eUludGVydmFsIHsKICBpZCAgICAgICAgICAgICAgIFN0cmluZyAgICAgICAgICAgICAgICAgICAgQGlkIEBkZWZhdWx0KGN1aWQoKSkKICBhdmFpbGFiaWxpdHlJZCAgIFN0cmluZwogIGF2YWlsYWJpbGl0eSAgICAgQXJ0aXNhbkF2YWlsYWJpbGl0eSAgICAgIEByZWxhdGlvbihmaWVsZHM6IFthdmFpbGFiaWxpdHlJZF0sIHJlZmVyZW5jZXM6IFtpZF0sIG9uRGVsZXRlOiBDYXNjYWRlKQogIGRheU9mV2VlayAgICAgICBBdmFpbGFiaWxpdHlEYXlPZldlZWsKICBzdGFydFRpbWUgICAgICAgIFN0cmluZwogIGVuZFRpbWUgICAgICAgICAgU3RyaW5nCiAgY3JlYXRlZEF0ICAgICAgICBEYXRlVGltZSAgICAgICAgICAgICAgICAgIEBkZWZhdWx0KG5vdygpKQoKICBAQHVuaXF1ZShbYXZhaWxhYmlsaXR5SWQsIGRheU9mV2Vla10pCn0K
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AvailabilityDayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model Artisan {
+  id            String                @id @default(cuid())
+  email         String                @unique
+  displayName   String?
+  timezone      String                @default("UTC")
+  availability  ArtisanAvailability?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+}
+
+model ArtisanAvailability {
+  id         String                 @id @default(cuid())
+  artisanId  String                 @unique
+  artisan    Artisan                @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  timezone   String                 @default("UTC")
+  intervals  AvailabilityInterval[]
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+}
+
+model AvailabilityInterval {
+  id              String                 @id @default(cuid())
+  availabilityId  String
+  availability    ArtisanAvailability    @relation(fields: [availabilityId], references: [id], onDelete: Cascade)
+  dayOfWeek       AvailabilityDayOfWeek
+  startTime       String
+  endTime         String
+  createdAt       DateTime               @default(now())
+
+  @@unique([availabilityId, dayOfWeek])
+}
