@@ -49,7 +49,7 @@ export default function ArtisanFeedbackPage() {
   const renderStars = (rating: number) => (
     <div className="flex gap-0.5" aria-label={`${rating} out of 5 stars`}>
       {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i} aria-hidden="true">{i < Math.round(rating) ? '★' : '☆'</span>
+        <span key={i} aria-hidden="true">{i < Math.round(rating) ? '★' : '☆'}</span>
       ))}
     </div>
   );
