@@ -14,6 +14,12 @@ import {
 	type CuratorVerificationStatusResponse,
 } from "@/lib/api";
 
+const LOAD_ERROR_MESSAGE = "Unable to load your verification status.";
+
+function describeLoadError(err: unknown): string {
+	return err instanceof ApiClientError ? err.message : LOAD_ERROR_MESSAGE;
+}
+
 function formatDateTime(value?: string): string {
 	if (!value) return "—";
 	const date = new Date(value);
@@ -40,34 +46,43 @@ export default function CuratorVerificationStatusPage() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const fetchStatus = useCallback(async () => {
+	const load = useCallback(async () => {
+		setIsLoading(true);
+		setError(null);
 		try {
 			setData(await getCuratorVerificationStatus());
 		} catch (err) {
-			setError(
-				err instanceof ApiClientError
-					? err.message
-					: "Unable to load your verification status.",
-			);
+			setError(describeLoadError(err));
 		} finally {
 			setIsLoading(false);
 		}
 	}, []);
 
-	const load = useCallback(async () => {
-		setIsLoading(true);
-		setError(null);
-		await fetchStatus();
-	}, [fetchStatus]);
-
 	useEffect(() => {
-		// Initial load only. `isLoading` and `error` already hold their initial
-		// values here, and `fetchStatus` reaches its first setState only after an
-		// await — so nothing is set synchronously in the effect body, which is what
-		// `react-hooks/set-state-in-effect` rejects. The refresh button below keeps
-		// using `load`, which is an event handler and free to reset the flags.
-		void fetchStatus();
-	}, [fetchStatus]);
+		// Initial load only. The state updates happen after the `await` inside the
+		// inline async IIFE, so nothing is set synchronously in the effect body —
+		// which is what `react-hooks/set-state-in-effect` rejects. The refresh
+		// button below keeps using `load`, which runs as an event handler.
+		let cancelled = false;
+
+		(async () => {
+			try {
+				const status = await getCuratorVerificationStatus();
+				if (!cancelled) {
+					setData(status);
+					setError(null);
+				}
+			} catch (err) {
+				if (!cancelled) setError(describeLoadError(err));
+			} finally {
+				if (!cancelled) setIsLoading(false);
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	return (
 		<AuthGuard>
