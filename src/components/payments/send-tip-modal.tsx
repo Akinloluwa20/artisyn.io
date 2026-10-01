@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useFormSubmission } from "@/hooks/use-form-submission";
+import { StellarNetworkNotice } from "@/components/ui/network-badge";
 
 export interface SendTipPayload {
   amount: string;
@@ -194,6 +195,9 @@ export function SendTipModal({
               {submitError}
             </p>
           )}
+
+          {/* Non-production only: target network unambiguous before confirming (issue #204). */}
+          <StellarNetworkNotice className="mb-4" />
 
           <div className="mt-6 flex justify-end gap-3">
             <Button
