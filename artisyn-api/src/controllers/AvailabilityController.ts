@@ -1,1 +1,279 @@
-aW1wb3J0IHsgUmVxdWVzdCwgUmVzcG9uc2UgfSBmcm9tICJleHByZXNzIjsKaW1wb3J0IHsgUHJpc21hQ2xpZW50LCBBdmFpbGFiaWxpdHlEYXlPZldlZWsgfSBmcm9tICJAcHJpc21hL2NsaWVudCI7Cgpjb25zdCBXRUFLREFZUzogQXZhaWxhYmlsaXR5RGF5T2ZXZWVrW10gPSBbCiAgQXZhaWxhYmlsaXR5RGF5T2ZXZWVrLk1PTkRBWSwKICBBdmFpbGFiaWxpdHlEYXlPZldlZWsuVFVFU0RBWSwKICBBdmFpbGFiaWxpdHlEYXlPZldlZWsuV0VETkVTREFZLAogIEF2YWlsYWJpbGl0eURheU9mV2Vlay5USFVSU0RBWSwKICBBdmFpbGFiaWxpdHlEYXlPZldlZWsuRlJJREFZLAogIEF2YWlsYWJpbGl0eURheU9mV2Vlay5TQVRVUkRBWSwKICBBdmFpbGFiaWxpdHlEYXlPZldlZWsuU1VOREFZLApdOwoKY29uc3QgVElNRV9SRUdFWFAgPSAvXihbMDFdXGR8MlswLTNdKTpbMC01XVxkJC87Cgp0eXBlIEludGVydmFsSW5wdXQgPSB7CiAgZGF5T2ZXZWVrOiBzdHJpbmc7CiAgZW5hYmxlZD86IGJvb2xlYW47CiAgc3RhcnQ/OiBzdHJpbmc7CiAgZW5kPzogc3RyaW5nOwp9OwoKdHlwZSBVcHNlcnRQYXlsb2FkID0gewogIHRpbWV6b25lPzogc3RyaW5nOwogIGludGVydmFscz86IEludGVydmFsSW5wdXRbXTsKfTsKCnR5cGUgVmFsaWRhdGVkSW50ZXJ2YWwgPSB7CiAgZGF5T2ZXZWVrOiBBdmFpbGFiaWxpdHlEYXlPZldlZWs7CiAgc3RhcnRUaW1lOiBzdHJpbmc7CiAgZW5kVGltZTogc3RyaW5nOwp9OwoKZXhwb3J0IGNsYXNzIEF2YWlsYWJpbGl0eVZhbGlkYXRpb25FcnJvciBleHRlbmRzIEVycm9yIHsKICBzdGF0dXMgPSA0MDA7CiAgZGV0YWlsczogUmVjb3JkPHN0cmluZywgc3RyaW5nPjsKCiAgY29uc3RydWN0b3IoZGV0YWlsczogUmVjb3JkPHN0cmluZywgc3RyaW5nPikgewogICAgc3VwZXIoIkF2YWlsYWJpbGl0eSBwYXlsb2FkIGlzIGludmFsaWQiKTsKICAgIHRoaXMubmFtZSA9ICJBdmFpbGFiaWxpdHlWYWxpZGF0aW9uRXJyb3IiOwogICAgdGhpcy5kZXRhaWxzID0gZGV0YWlsczsKICB9Cn0KCmZ1bmN0aW9uIGlzVmFsaWRUaW1lem9uZSh0aW1lem9uZTogc3RyaW5nKTogYm9vbGVhbiB7CiAgaWYgKCF0aW1lem9uZSB8fCB0aW1lem9uZS5sZW5ndGggPiA2NCkgewogICAgcmV0dXJuIGZhbHNlOwogIH0KICB0cnkgewogICAgbmV3IEludGwuRGF0ZVRpbWVGb3JtYXQoImVuLVVTIiwgeyB0aW1lWm9uZTogdGltZXpvbmUgfSk7CiAgICByZXR1cm4gdHJ1ZTsKICB9IGNhdGNoIHsKICAgIHJldHVybiBmYWxzZTsKICB9Cn0KCmZ1bmN0aW9uIG1pbnV0ZXNPZkRheSh0aW1lOiBzdHJpbmcpOiBudW1iZXIgewogIGNvbnN0IFtob3VycywgbWludXRlc10gPSB0aW1lLnNwbGl0KCI6IikubWFwKE51bWJlcik7CiAgcmV0dXJuIGhvdXJzICogNjAgKyBtaW51dGVzOwp9CgpmdW5jdGlvbiB2YWxpZGF0ZVBheWxvYWQocGF5bG9hZDogVXBzZXJ0UGF5bG9hZCk6IHsKICB0aW1lem9uZTogc3RyaW5nOwogIGludGVydmFsczogVmFsaWRhdGVkSW50ZXJ2YWxbXTsKfSB7CiAgY29uc3QgZGV0YWlsczogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IHt9OwogIGNvbnN0IHRpbWV6b25lID0gdHlwZW9mIHBheWxvYWQudGltZXpvbmUgPT09ICJzdHJpbmciID8gcGF5bG9hZC50aW1lem9uZS50cmltKCkgOiAiIjsKCiAgaWYgKCF0aW1lem9uZSkgewogICAgZGV0YWlscy50aW1lem9uZSA9ICJUaW1lem9uZSBpcyByZXF1aXJlZCI7CiAgfSBlbHNlIGlmICghaXNWYWxpZFRpbWV6b25lKHRpbWV6b25lKSkgewogICAgZGV0YWlscy50aW1lem9uZSA9ICJUaW1lem9uZSBtdXN0IGJlIGEgdmFsaWQgSUFOQSB0aW1lem9uZSBpZGVudGlmaWVyIjsKICB9CgogIGlmICghQXJyYXkuaXNBcnJheShwYXlsb2FkLmludGVydmFscykpIHsKICAgIGRldGFpbHMuaW50ZXJ2YWxzID0gIkludGVydmFscyBtdXN0IGJlIGFuIGFycmF5IjsKICAgIHRocm93IG5ldyBBdmFpbGFiaWxpdHlWYWxpZGF0aW9uRXJyb3IoZGV0YWlscyk7CiAgfQoKICBjb25zdCBzZWVuRGF5cyA9IG5ldyBTZXQ8c3RyaW5nPigpOwogIGNvbnN0IHZhbGlkYXRlZEludGVydmFsczogVmFsaWRhdGVkSW50ZXJ2YWxbXSA9IFtdOwoKICBmb3IgKGNvbnN0IFtyYXdJbnRlcnZhbCBvZiBwYXlsb2FkLmludGVydmFscy5lbnRyaWVzKCldIG9mIFtdIGFzIGFueSkgewogICAgLy8gcGxhY2Vob2xkZXIgdG8ga2VlcCB0eXBlIG5hcnJvd2luZyBzaW1wbGUKICB9CgogIHBheWxvYWQuaW50ZXJ2YWxzLmZvckVhY2goKGludGVydmFsLCBpbmRleCkgPT4gewogICAgY29uc3QgcHJlZml4ID0gYGludGVydmFsc1ske2luZGV4fV1gOwogICAgY29uc3QgZGF5ID0gdHlwZW9mIGludGVydmFsLmRheU9mV2VlayA9PT0gInN0cmluZyIgPyBpbnRlcnZhbC5kYXlPZldlZWsudG9VcHBlckNhc2UoKSA6ICIiOwoKICAgIGlmICghV0VBS0RBWVMuaW5jbHVkZXMoZGF5IGFzIEF2YWlsYWJpbGl0eURheU9mV2VlaykpIHsKICAgICAgZGV0YWlsc1tgJHtwcmVmaXh9LmRheU9mV2Vla2BdID0gIkRheSBvZiB3ZWVrIGlzIGludmFsaWQiOwogICAgICByZXR1cm47CiAgICB9CgogICAgaWYgKHNlZW5EYXlzLmhhcyhkYXkpKSB7CiAgICAgIGRldGFpbHNbYCR7cHJlZml4fS5kYXlPZldlZWtgXSA9ICJEdXBsaWNhdGUgZGF5IG9mIHdlZWsiOwogICAgICByZXR1cm47CiAgICB9CiAgICBzZWVuRGF5cy5hZGQoZGF5KTsKCiAgICBpZiAoaW50ZXJ2YWwuZW5hYmxlZCA9PT0gZmFsc2UpIHsKICAgICAgcmV0dXJuOwogICAgfQoKICAgIGNvbnN0IHN0YXJ0ID0gdHlwZW9mIGludGVydmFsLnN0YXJ0ID09PSAic3RyaW5nIiA/IGludGVydmFsLnN0YXJ0LnRyaW0oKSA6ICIiOwogICAgY29uc3QgZW5kID0gdHlwZW9mIGludGVydmFsLmVuZCA9PT0gInN0cmluZyIgPyBpbnRlcnZhbC5lbmQudHJpbSgpIDogIiI7CgogICAgaWYgKCFUSU1FX1JFR0VYUC50ZXN0KHN0YXJ0KSkgewogICAgICBkZXRhaWxzW2Ake3ByZWZpeH0uc3RhcnRgXSA9ICJTdGFydCB0aW1lIG11c3QgdXNlIEhIOk1NIGZvcm1hdCI7CiAgICB9CiAgICBpZiAoIVRJTUVfUkVHRVhQLnRlc3QoZW5kKSkgewogICAgICBkZXRhaWxzW2Ake3ByZWZpeH0uZW5kYF0gPSAiRW5kIHRpbWUgbXVzdCB1c2UgSEg6TU0gZm9ybWF0IjsKICAgIH0KICAgIGlmIChUSU1FX1JFR0VYUC50ZXN0KHN0YXJ0KSAmJiBUSU1FX1JFR0VYUC50ZXN0KGVuZCkpIHsKICAgICAgaWYgKG1pbnV0ZXNPZkRheShlbmQpIDw9IG1pbnV0ZXNPZkRheShzdGFydCkpIHsKICAgICAgICBkZXRhaWxzW2Ake3ByZWZpeH0uZW5kYF0gPSAiRW5kIHRpbWUgbXVzdCBiZSBhZnRlciBzdGFydCB0aW1lIjsKICAgICAgfQogICAgfQoKICAgIGlmICghZGV0YWlsc1tgJHtwcmVmaXh9LnN0YXJ0YF0gJiYgIWRldGFpbHNbYCR7cHJlZml4fS5lbmRgXSkgewogICAgICB2YWxpZGF0ZWRJbnRlcnZhbHMucHVzaCh7CiAgICAgICAgZGF5T2ZXZWVrOiBkYXkgYXMgQXZhaWxhYmlsaXR5RGF5T2ZXZWVrLAogICAgICAgIHN0YXJ0VGltZTogc3RhcnQsCiAgICAgICAgZW5kVGltZTogZW5kLAogICAgICB9KTsKICAgIH0KICB9KTsKCiAgaWYgKE9iamVjdC5rZXlzKGRldGFpbHMpLmxlbmd0aCA+IDApIHsKICAgIHRocm93IG5ldyBBdmFpbGFiaWxpdHlWYWxpZGF0aW9uRXJyb3IoZGV0YWlscyk7CiAgfQoKICByZXR1cm4geyB0aW1lem9uZSwgaW50ZXJ2YWxzOiB2YWxpZGF0ZWRJbnRlcnZhbHMgfTsKfQoKZXhwb3J0IGNsYXNzIEF2YWlsYWJpbGl0eUNvbnRyb2xsZXIgewogIGNvbnN0cnVjdG9yKHByaXZhdGUgcmVhZG9ubHkgcHJpc21hOiBQcmlzbWFDbGllbnQpIHt9CgogIHByaXZhdGUgZ2V0QXJ0aXNhbklkKHJlcTogUmVxdWVzdCk6IHN0cmluZyB8IG51bGwgewogICAgY29uc3QgdXNlciA9IChyZXEgYXMgUmVxdWVzdCAmIHsgdXNlcj86IHsgaWQ/OiBzdHJpbmc7IGFydGlzYW5JZD86IHN0cmluZyB9IH0pLnVzZXI7CiAgICByZXR1cm4gdXNlci?.YXJ0aXNhbklkID8/IHVzZXI/LmlkID8/IG51bGw7CiAgfQoKICBhc3luYyBnZXRBdmFpbGFiaWxpdHkocmVxOiBSZXF1ZXN0LCByZXM6IFJlc3BvbnNlKTogUHJvbWlzZTx2b2lkPiB7CiAgICBjb25zdCBhcnRpc2FuSWQgPSB0aGlzLmdldEFydGlzYW5JZChyZXEpOwogICAgaWYgKCFhcnRpc2FuSWQpIHsKICAgICAgcmVzLnN0YXR1cyg0MDEpLmpzb24oeyBlcnJvcjogIlVuYXV0aGVudGljYXRlZCIgfSk7CiAgICAgIHJldHVybjsKICAgIH0KCiAgICBjb25zdCBhdmFpbGFiaWxpdHkgPSBhd2FpdCB0aGlzLnByaXNtYS5hcnRpc2FuQXZhaWxhYmlsaXR5LmZpbmRVbmlxdWUoewogICAgICB3aGVyZTogeyBhcnRpc2FuSWQgfSwKICAgICAgaW5jbHVkZTogeyBpbnRlcnZhbHM6IHRydWUgfSwKICAgIH0pOwoKICAgIGlmICghYXZhaWxhYmlsaXR5KSB7CiAgICAgIHJlcy5qc29uKHsKICAgICAgICB0aW1lem9uZTogIlVUQyIsCiAgICAgICAgaW50ZXJ2YWxzOiBXRUFLREFZUy5tYXAoKGRheU9mV2VlaykgPT4gKHsKICAgICAgICAgIGRheU9mV2VlaywKICAgICAgICAgIGVuYWJsZWQ6IGZhbHNlLAogICAgICAgICAgc3RhcnQ6ICIwOTowMCIsCiAgICAgICAgICBlbmQ6ICIxNzowMCIsCiAgICAgICAgfSkpLAogICAgICB9KTsKICAgICAgcmV0dXJuOwogICAgfQoKICAgIGNvbnN0IGludGVydmFsQnlEYXkgPSBuZXcgTWFwKGF2YWlsYWJpbGl0eS5pbnRlcnZhbHMubWFwKChpbnRlcnZhbCkgPT4gW2ludGVydmFsLmRheU9mV2VlaywgaW50ZXJ2YWxdKSk7CgogICAgcmVzLmpzb24oewogICAgICB0aW1lem9uZTogYXZhaWxhYmlsaXR5LnRpbWV6b25lLAogICAgICBpbnRlcnZhbHM6IFdFQUtEQVlTLm1hcCgoZGF5T2ZXZWVrKSA9PiB7CiAgICAgICAgY29uc3QgaW50ZXJ2YWwgPSBpbnRlcnZhbEJ5RGF5LmdldChkYXlPZldlZWspOwogICAgICAgIHJldHVybiB7CiAgICAgICAgICBkYXlPZldlZWssCiAgICAgICAgICBlbmFibGVkOiBCb29sZWFuKGludGVydmFsKSwKICAgICAgICAgIHN0YXJ0OiBpbnRlcnZhbD8uc3RhcnRUaW1lID8/ICIwOTowMCIsCiAgICAgICAgICBlbmQ6IGludGVydmFsPy5lbmRUaW1lID8/ICIxNzowMCIsCiAgICAgICAgfTsKICAgICAgfSksCiAgICB9KTsKICB9CgogIGFzeW5jIHVwc2VydEF2YWlsYWJpbGl0eShyZXE6IFJlcXVlc3QsIHJlczogUmVzcG9uc2UpOiBQcm9taXNlPHZvaWQ+IHsKICAgIGNvbnN0IGFydGlzYW5JZCA9IHRoaXMuZ2V0QXJ0aXNhbklkKHJlcSk7CiAgICBpZiAoIWFydGlzYW5JZCkgewogICAgICByZXMuc3RhdHVzKDQwMSkuanNvbih7IGVycm9yOiAiVW5hdXRoZW50aWNhdGVkIiB9KTsKICAgICAgcmV0dXJuOwogICAgfQoKICAgIHRyeSB7CiAgICAgIGNvbnN0IHZhbGlkYXRlZCA9IHZhbGlkYXRlUGF5bG9hZChyZXEuYm9keSBhcyBVcHNlcnRQYXlsb2FkKTsKCiAgICAgIGNvbnN0IHNhdmVkID0gYXdhaXQgdGhpcy5wcmlzbWEuJHRyYW5zYWN0aW9uKGFzeW5jICh0eCkgPT4gewogICAgICAgIGNvbnN0IGF2YWlsYWJpbGl0eSA9IGF3YWl0IHR4LmFydGlzYW5BdmFpbGFiaWxpdHkudXBzZXJ0KHsKICAgICAgICAgIHdoZXJlOiB7IGFydGlzYW5JZCB9LAogICAgICAgICAgY3JlYXRlOiB7IGFydGlzYW5JZCwgdGltZXpvbmU6IHZhbGlkYXRlZC50aW1lem9uZSB9LAogICAgICAgICAgdXBkYXRlOiB7IHRpbWV6b25lOiB2YWxpZGF0ZWQudGltZXpvbmUgfSwKICAgICAgICB9KTsKCiAgICAgICAgYXdhaXQgdHguYXZhaWxhYmlsaXR5SW50ZXJ2YWwuZGVsZXRlTWFueSh7IHdoZXJlOiB7IGF2YWlsYWJpbGl0eUlkOiBhdmFpbGFiaWxpdHkuaWQgfSB9KTsKCiAgICAgICAgaWYgKHZhbGlkYXRlZC5pbnRlcnZhbHMubGVuZ3RoID4gMCkgewogICAgICAgICAgYXdhaXQgdHguYXZhaWxhYmlsaXR5SW50ZXJ2YWwuY3JlYXRlTWFueSh7CiAgICAgICAgICAgIGRhdGE6IHZhbGlkYXRlZC5pbnRlcnZhbHMubWFwKChpbnRlcnZhbCkgPT4gKHsKICAgICAgICAgICAgICBhdmFpbGFiaWxpdHlJZDogYXZhaWxhYmlsaXR5LmlkLAogICAgICAgICAgICAgIGRheU9mV2VlazogaW50ZXJ2YWwuZGF5T2ZXZWVrLAogICAgICAgICAgICAgIHN0YXJ0VGltZTogaW50ZXJ2YWwuc3RhcnRUaW1lLAogICAgICAgICAgICAgIGVuZFRpbWU6IGludGVydmFsLmVuZFRpbWUsCiAgICAgICAgICAgIH0pKSwKICAgICAgICAgIH0pOwogICAgICAgIH0KCiAgICAgICAgcmV0dXJuIHR4LmFydGlzYW5BdmFpbGFiaWxpdHkuZmluZFVuaXF1ZSh7CiAgICAgICAgICB3aGVyZTogeyBpZDogYXZhaWxhYmlsaXR5LmlkIH0sCiAgICAgICAgICBpbmNsdWRlOiB7IGludGVydmFsczogdHJ1ZSB9LAogICAgICAgIH0pOwogICAgICB9KTsKCiAgICAgIGlmICghc2F2ZWQpIHsKICAgICAgICByZXMuc3RhdHVzKDUwMCkuanNvbih7IGVycm9yOiAiVW5hYmxlIHRvIHNhdmUgYXZhaWxhYmlsaXR5IiB9KTsKICAgICAgICByZXR1cm47CiAgICAgIH0KCiAgICAgIGNvbnN0IGludGVydmFsQnlEYXkgPSBuZXcgTWFwKHNhdmVkLmludGVydmFscy5tYXAoKGludGVydmFsKSA9PiBbaW50ZXJ2YWwuZGF5T2ZXZWVrLCBpbnRlcnZhbF0pKTsKCiAgICAgIHJlcy5qc29uKHsKICAgICAgICB0aW1lem9uZTogc2F2ZWQudGltZXpvbmUsCiAgICAgICAgaW50ZXJ2YWxzOiBXRUFLREFZUy5tYXAoKGRheU9mV2VlaykgPT4gewogICAgICAgICAgY29uc3QgaW50ZXJ2YWwgPSBpbnRlcnZhbEJ5RGF5LmdldChkYXlPZldlZWspOwogICAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgZGF5T2ZXZWVrLAogICAgICAgICAgICBlbmFibGVkOiBCb29sZWFuKGludGVydmFsKSwKICAgICAgICAgICAgc3RhcnQ6IGludGVydmFsPy5zdGFydFRpbWUgPz8gIjA5OjAwIiwKICAgICAgICAgICAgZW5kOiBpbnRlcnZhbD8uZW5kVGltZSA/PyAiMTc6MDAiLAogICAgICAgICAgfTsKICAgICAgICB9KSwKICAgICAgfSk7CiAgICB9IGNhdGNoIChlcnJvcikgewogICAgICBpZiAoZXJyb3IgaW5zdGFuY2VvZiBBdmFpbGFiaWxpdHlWYWxpZGF0aW9uRXJyb3IpIHsKICAgICAgICByZXMuc3RhdHVzKGVycm9yLnN0YXR1cykuanNvbih7IGVycm9yOiBlcnJvci5tZXNzYWdlLCBkZXRhaWxzOiBlcnJvci5kZXRhaWxzIH0pOwogICAgICAgIHJldHVybjsKICAgICAgfQogICAgICByZXMuc3RhdHVzKDUwMCkuanNvbih7IGVycm9yOiAiVW5hYmxlIHRvIHNhdmUgYXZhaWxhYmlsaXR5IiB9KTsKICAgIH0KICB9CgogIGFzeW5jIGdldFB1YmxpY0F2YWlsYWJpbGl0eShyZXE6IFJlcXVlc3QsIHJlczogUmVzcG9uc2UpOiBQcm9taXNlPHZvaWQ+IHsKICAgIGNvbnN0IGFydGlzYW5JZCA9IHJlcS5wYXJhbXMuaWQ7CiAgICBpZiAoIWFydGlzYW5JZCkgewogICAgICByZXMuc3RhdHVzKDQwMCkuanNvbih7IGVycm9yOiAiQXJ0aXNhbiBpZCBpcyByZXF1aXJlZCIgfSk7CiAgICAgIHJldHVybjsKICAgIH0KCiAgICBjb25zdCBhcnRpc2FuID0gYXdhaXQgdGhpcy5wcmlzbWEuYXJ0aXNhbi5maW5kVW5pcXVlKHsKICAgICAgd2hlcmU6IHsgaWQ6IGFydGlzYW5JZCB9LAogICAgICBpbmNsdWRlOiB7IGF2YWlsYWJpbGl0eTogeyBpbmNsdWRlOiB7IGludGVydmFsczogdHJ1ZSB9IH0gfSwKICAgIH0pOwoKICAgIGlmICghYXJ0aXNhbiB8fCAhYXJ0aXNhbi5hdmFpbGFiaWxpdHkpIHsKICAgICAgcmVzLnN0YXR1cyg0MDQpLmpzb24oeyBlcnJvcjogIkF2YWlsYWJpbGl0eSBub3QgZm91bmQiIH0pOwogICAgICByZXR1cm47CiAgICB9CgogICAgY29uc3QgcHJpdmFjeSA9IChhcnRpc2FuIGFzIHsgcHJvZmlsZVByaXZhY3k/OiBzdHJpbmc7IGF2YWlsYWJpbGl0eVZpc2liaWxpdHk/OiBzdHJpbmcgfSk7CiAgICBjb25zdCB2aXNpYmlsaXR5ID0gcHJpdmFjeS5hdmFpbGFiaWxpdHlWaXNpYmlsaXR5ID8/IHByaXZhY3kucHJvZmlsZVByaXZhY3kgPz8gInB1YmxpYyI7CiAgICBpZiAodmlzaWJpbGl0eSAhPT0gInB1YmxpYyIpIHsKICAgICAgcmVzLnN0YXR1cyg0MDMpLmpzb24oeyBlcnJvcjogIkF2YWlsYWJpbGl0eSBpcyBub3QgcHVibGljbHkgdmlzaWJsZSIgfSk7CiAgICAgIHJldHVybjsKICAgIH0KCiAgICByZXMuanNvbigoewogICAgICB0aW1lem9uZTogYXJ0aXNhbi5hdmFpbGFiaWxpdHkudGltZXpvbmUsCiAgICAgIGludGVydmFsczogYXJ0aXNhbi5hdmFpbGFiaWxpdHkuaW50ZXJ2YWxzLm1hcCgoaW50ZXJ2YWwpID0+ICh7CiAgICAgICAgZGF5T2ZXZWVrOiBpbnRlcnZhbC5kYXlPZldlZWssCiAgICAgICAgc3RhcnQ6IGludGVydmFsLnN0YXJ0VGltZSwKICAgICAgICBlbmQ6IGludGVydmFsLmVuZFRpbWUsCiAgICAgIH0pKSwKICAgIH0pKTsKICB9Cn0K
+import { Request, Response } from "express";
+import { PrismaClient, AvailabilityDayOfWeek } from "@prisma/client";
+
+const WEAKDAYS: AvailabilityDayOfWeek[] = [
+  AvailabilityDayOfWeek.MONDAY,
+  AvailabilityDayOfWeek.TUESDAY,
+  AvailabilityDayOfWeek.WEDNESDAY,
+  AvailabilityDayOfWeek.THURSDAY,
+  AvailabilityDayOfWeek.FRIDAY,
+  AvailabilityDayOfWeek.SATURDAY,
+  AvailabilityDayOfWeek.SUNDAY,
+];
+
+const TIME_REGEXP = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+type IntervalInput = {
+  dayOfWeek: string;
+  enabled?: boolean;
+  start?: string;
+  end?: string;
+};
+
+type UpsertPayload = {
+  timezone?: string;
+  intervals?: IntervalInput[];
+};
+
+type ValidatedInterval = {
+  dayOfWeek: AvailabilityDayOfWeek;
+  startTime: string;
+  endTime: string;
+};
+
+export class AvailabilityValidationError extends Error {
+  status = 400;
+  details: Record<string, string>;
+
+  constructor(details: Record<string, string>) {
+    super("Availability payload is invalid");
+    this.name = "AvailabilityValidationError";
+    this.details = details;
+  }
+}
+
+function isValidTimezone(timezone: string): boolean {
+  if (!timezone || timezone.length > 64) {
+    return false;
+  }
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: timezone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function minutesOfDay(time: string): number {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function validatePayload(payload: UpsertPayload): {
+  timezone: string;
+  intervals: ValidatedInterval[];
+} {
+  const details: Record<string, string> = {};
+  const timezone = typeof payload.timezone === "string" ? payload.timezone.trim() : "";
+
+  if (!timezone) {
+    details.timezone = "Timezone is required";
+  } else if (!isValidTimezone(timezone)) {
+    details.timezone = "Timezone must be a valid IANA timezone identifier";
+  }
+
+  if (!Array.isArray(payload.intervals)) {
+    details.intervals = "Intervals must be an array";
+    throw new AvailabilityValidationError(details);
+  }
+
+  const seenDays = new Set<string>();
+  const validatedIntervals: ValidatedInterval[] = [];
+
+  payload.intervals.forEach((interval, index) => {
+    const prefix = `intervals[${index}]`;
+    const day = typeof interval.dayOfWeek === "string" ? interval.dayOfWeek.toUpperCase() : "";
+
+    if (!WEAKDAYS.includes(day as AvailabilityDayOfWeek)) {
+      details[`${prefix}.dayOfWeek`] = "Day of week is invalid";
+      return;
+    }
+
+    if (seenDays.has(day)) {
+      details[`${prefix}.dayOfWeek`] = "Duplicate day of week";
+      return;
+    }
+    seenDays.add(day);
+
+    if (interval.enabled === false) {
+      return;
+    }
+
+    const start = typeof interval.start === "string" ? interval.start.trim() : "";
+    const end = typeof interval.end === "string" ? interval.end.trim() : "";
+
+    if (!TIME_REGEXP.test(start)) {
+      details[`${prefix}.start`] = "Start time must use HH:MM format";
+    }
+    if (!TIME_REGEXP.test(end)) {
+      details[`${prefix}.end`] = "End time must use HH:MM format";
+    }
+    if (TIME_REGEXP.test(start) && TIME_REGEXP.test(end)) {
+      if (minutesOfDay(end) <= minutesOfDay(start)) {
+        details[`${prefix}.end`] = "End time must be after start time";
+      }
+    }
+
+    if (!details[`${prefix}.start`] && !details[`${prefix}.end`]) {
+      validatedIntervals.push({
+        dayOfWeek: day as AvailabilityDayOfWeek,
+        startTime: start,
+        endTime: end,
+      });
+    }
+  });
+
+  if (Object.keys(details).length > 0) {
+    throw new AvailabilityValidationError(details);
+  }
+
+  return { timezone, intervals: validatedIntervals };
+}
+
+export class AvailabilityController {
+  constructor(private readonly prisma: PrismaClient) {}
+
+  private getArtisanId(req: Request): string | null {
+    const user = (req as Request & { user?: { id?: string; artisanId?: string } }).user;
+    return user?.artisanId ?? user?.id ?? null;
+  }
+
+  async getAvailability(req: Request, res: Response): Promise<void> {
+    const artisanId = this.getArtisanId(req);
+    if (!artisanId) {
+      res.status(401).json({ error: "Unauthenticated" });
+      return;
+    }
+
+    const availability = await this.prisma.artisanAvailability.findUnique({
+      where: { artisanId },
+      include: { intervals: true },
+    });
+
+    if (!availability) {
+      res.json({
+        timezone: "UTC",
+        intervals: WEAKDAYS.map((dayOfWeek) => ({
+          dayOfWeek,
+          enabled: false,
+          start: "09:00",
+          end: "17:00",
+        })),
+      });
+      return;
+    }
+
+    const intervalByDay = new Map(availability.intervals.map((interval) => [interval.dayOfWeek, interval]));
+
+    res.json({
+      timezone: availability.timezone,
+      intervals: WEAKDAYS.map((dayOfWeek) => {
+        const interval = intervalByDay.get(dayOfWeek);
+        return {
+          dayOfWeek,
+          enabled: Boolean(interval),
+          start: interval?.startTime ?? "09:00",
+          end: interval?.endTime ?? "17:00",
+        };
+      }),
+    });
+  }
+
+  async upsertAvailability(req: Request, res: Response): Promise<void> {
+    const artisanId = this.getArtisanId(req);
+    if (!artisanId) {
+      res.status(401).json({ error: "Unauthenticated" });
+      return;
+    }
+
+    try {
+      const validated = validatePayload(req.body as UpsertPayload);
+
+      const saved = await this.prisma.$transaction(async (tx) => {
+        const availability = await tx.artisanAvailability.upsert({
+          where: { artisanId },
+          create: { artisanId, timezone: validated.timezone },
+          update: { timezone: validated.timezone },
+        });
+
+        await tx.availabilityInterval.deleteMany({ where: { availabilityId: availability.id } });
+
+        if (validated.intervals.length > 0) {
+          await tx.availabilityInterval.createMany({
+            data: validated.intervals.map((interval) => ({
+              availabilityId: availability.id,
+              dayOfWeek: interval.dayOfWeek,
+              startTime: interval.startTime,
+              endTime: interval.endTime,
+            })),
+          });
+        }
+
+        return tx.artisanAvailability.findUnique({
+          where: { id: availability.id },
+          include: { intervals: true },
+        });
+      });
+
+      if (!saved) {
+        res.status(500).json({ error: "Unable to save availability" });
+        return;
+      }
+
+      const intervalByDay = new Map(saved.intervals.map((interval) => [interval.dayOfWeek, interval]));
+
+      res.json({
+        timezone: saved.timezone,
+        intervals: WEAKDAYS.map((dayOfWeek) => {
+          const interval = intervalByDay.get(dayOfWeek);
+          return {
+            dayOfWeek,
+            enabled: Boolean(interval),
+            start: interval?.startTime ?? "09:00",
+            end: interval?.endTime ?? "17:00",
+          };
+        }),
+      });
+    } catch (error) {
+      if (error instanceof AvailabilityValidationError) {
+        res.status(error.status).json({ error: error.message, details: error.details });
+        return;
+      }
+      res.status(500).json({ error: "Unable to save availability" });
+    }
+  }
+
+  async getPublicAvailability(req: Request, res: Response): Promise<void> {
+    const artisanId = req.params.id;
+    if (!artisanId) {
+      res.status(400).json({ error: "Artisan id is required" });
+      return;
+    }
+
+    const artisan = await this.prisma.artisan.findUnique({
+      where: { id: artisanId },
+      include: { availability: { include: { intervals: true } } },
+    });
+
+    if (!artisan || !artisan.availability) {
+      res.status(404).json({ error: "Availability not found" });
+      return;
+    }
+
+    const privacy = (artisan as { profilePrivacy?: string; availabilityVisibility?: string });
+    const visibility = privacy.availabilityVisibility ?? privacy.profilePrivacy ?? "public";
+    if (visibility !== "public") {
+      res.status(403).json({ error: "Availability is not publicly visible" });
+      return;
+    }
+
+    res.json(({
+      timezone: artisan.availability.timezone,
+      intervals: artisan.availability.intervals.map((interval) => ({
+        dayOfWeek: interval.dayOfWeek,
+        start: interval.startTime,
+        end: interval.endTime,
+      })),
+    }));
+  }
+}
