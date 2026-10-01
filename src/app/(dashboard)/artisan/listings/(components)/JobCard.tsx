@@ -3,10 +3,11 @@
 import { Suspense, useCallback, useMemo, useState } from 'react';
 
 import Image from 'next/image';
-import type { Job } from '../dummyjobs';
+import type { Job } from '@/lib/api/jobs';
 import JobFilter from './JobFilters';
 import Link from 'next/link';
 import bgImg from '../(assets)/bg.png';
+import { SkeletonList } from '@/components/ui/skeleton-list';
 import { useWallet } from '@/context/WalletProvider';
 import { useCreateApplication, useJobs } from '@/lib/hooks';
 import { ApiClientError } from '@/lib/api/errors';
@@ -115,7 +116,9 @@ const JobCard = () => {
         <JobFilter onFilterChange={handleFilterChange} roles={Array.from(new Set(jobs.map((job) => job.title)))} />
       </Suspense>
 
-      {isLoading && <p className="mt-8 text-sm text-gray-400">Loading available jobs...</p>}
+      {isLoading && (
+        <SkeletonList className="mt-8" count={3} label="Loading available jobs" />
+      )}
 
       {error && (
         <div className="mt-8 text-center text-sm text-gray-500">

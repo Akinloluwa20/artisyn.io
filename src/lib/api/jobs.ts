@@ -3,6 +3,13 @@ import { apiClient } from "./client";
 export interface Job {
   id: string;
   title: string;
+  category: string;
+  budget: string;
+  location: string;
+  shortDescription: string;
+  urgency: "low" | "medium" | "high";
+  icon?: string;
+  status: "available" | "active" | "applied" | "completed";
   [key: string]: unknown;
 }
 

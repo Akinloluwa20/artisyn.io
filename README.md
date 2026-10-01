@@ -105,7 +105,7 @@ The artisan dashboard shares `src/app/(dashboard)/artisan/layout.tsx`. Authentic
 
 | Planned URL | Target source | Tracking issue | Status |
 | --- | --- | --- | :---: |
-| `/client/dashboard` | `src/app/(dashboard)/client/dashboard/page.tsx` | [#108](https://github.com/artisyn-io/artisyn.io/issues/108) | Planned |
+| `/client/dashboard` | `src/app/(dashboard)/client/dashboard/page.tsx` | [#108](https://github.com/artisyn-io/artisyn.io/issues/108) | Available |
 | `/client/saved-artisans` | `src/app/(dashboard)/client/saved-artisans/page.tsx` | [#109](https://github.com/artisyn-io/artisyn.io/issues/109) | Planned |
 | `/client/applications` | `src/app/(dashboard)/client/applications/page.tsx` | [#110](https://github.com/artisyn-io/artisyn.io/issues/110) | Planned |
 | `/client/settings` | `src/app/(dashboard)/client/settings/page.tsx` | [#111](https://github.com/artisyn-io/artisyn.io/issues/111) | Planned |

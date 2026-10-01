@@ -16,7 +16,8 @@ export default function AdminLayout({
       <AdminSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0">
+      {/* pt-16 on mobile clears the fixed hamburger button */}
+      <main className="flex-1 min-w-0 pt-16 lg:pt-0">
         <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-7xl">
           {children}
         </div>

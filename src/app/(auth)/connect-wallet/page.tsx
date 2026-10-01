@@ -4,14 +4,32 @@ import { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useWallet } from '../../../context/WalletProvider';
 
 export default function ConnectWalletPage() {
   const router = useRouter();
-  const { connected, connect } = useWallet();
-  const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
+  const {
+    connected,
+    connect,
+    connectionStatus,
+    connectionError,
+    lastAttemptedWalletId,
+    clearConnectionFeedback,
+  } = useWallet();
+  // The wallet whose button shows a spinner. Kept as the *pending* wallet and
+  // narrowed to `null` once the connection settles, so the terminal states are
+  // derived during render rather than synced from an effect — which is exactly
+  // what `react-hooks/set-state-in-effect` rejects.
+  const [pendingWallet, setPendingWallet] = useState<string | null>(null);
+  const connectingWallet =
+    connectionStatus === 'error' ||
+    connectionStatus === 'canceled' ||
+    connectionStatus === 'timeout' ||
+    connectionStatus === 'idle'
+      ? null
+      : pendingWallet;
   const [hoveredWallet, setHoveredWallet] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,14 +41,24 @@ export default function ConnectWalletPage() {
   const handleWalletConnect = async (
     walletId: 'freighter' | 'albedo' | 'lobstr',
   ) => {
+    clearConnectionFeedback();
+    setPendingWallet(walletId);
     try {
-      setConnectingWallet(walletId);
-      // This now calls the direct connection logic in our Provider
       await connect(walletId);
-    } catch (error) {
-      console.error(`${walletId} connection failed:`, error);
-      setConnectingWallet(null);
+    } catch {
+      // Error details live on connectionError / connectionStatus for the UI panel.
+      setPendingWallet(null);
     }
+  };
+
+  const handleRetry = async () => {
+    const walletId = (connectionError?.walletId ||
+      lastAttemptedWalletId) as 'freighter' | 'albedo' | 'lobstr' | undefined;
+    if (!walletId) {
+      clearConnectionFeedback();
+      return;
+    }
+    await handleWalletConnect(walletId);
   };
 
   const walletOptions = [
@@ -38,6 +66,19 @@ export default function ConnectWalletPage() {
     { id: 'albedo', name: 'Albedo', logo: '/wallets/albedo-logo.png' },
     { id: 'lobstr', name: 'Lobstr', logo: '/wallets/lobstr-logo.png' },
   ] as const;
+
+  const showFeedbackPanel =
+    connectionError !== null &&
+    (connectionStatus === 'error' ||
+      connectionStatus === 'canceled' ||
+      connectionStatus === 'timeout');
+
+  const feedbackTitle =
+    connectionStatus === 'timeout'
+      ? 'Connection timed out'
+      : connectionStatus === 'canceled'
+        ? 'Connection canceled'
+        : 'Connection failed';
 
   return (
     <div className="min-h-screen flex bg-white">
@@ -61,6 +102,69 @@ export default function ConnectWalletPage() {
             </p>
           </div>
 
+          {showFeedbackPanel && connectionError && (
+            <div
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 p-4 space-y-3"
+            >
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-semibold text-red-800">
+                    {feedbackTitle}
+                  </p>
+                  <p className="text-sm text-red-700">
+                    {connectionError.message}
+                  </p>
+                  {connectionError.walletName || connectionError.walletId ? (
+                    <p className="text-xs text-red-600/80">
+                      Wallet:{' '}
+                      {connectionError.walletName || connectionError.walletId}
+                      {connectionError.code
+                        ? ` · ${connectionError.code.replace('_', ' ')}`
+                        : null}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 pl-8">
+                <button
+                  type="button"
+                  onClick={handleRetry}
+                  disabled={connectingWallet !== null}
+                  className="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {connectingWallet ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  Try again
+                </button>
+                <button
+                  type="button"
+                  onClick={clearConnectionFeedback}
+                  disabled={connectingWallet !== null}
+                  className="inline-flex items-center rounded-md border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
+          {connectionStatus === 'connecting' && connectingWallet && (
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+              <span>
+                Connecting to{' '}
+                {walletOptions.find((w) => w.id === connectingWallet)?.name ||
+                  connectingWallet}
+                … Approve the request in your wallet if prompted.
+              </span>
+            </div>
+          )}
+
           <div className="bg-blue-50 rounded-lg p-2 overflow-hidden">
             <div className="space-y-2">
               {walletOptions.map((wallet) => (
@@ -75,7 +179,7 @@ export default function ConnectWalletPage() {
                     connectingWallet === wallet.id
                       ? 'bg-white'
                       : 'bg-transparent'
-                  }`}
+                  } disabled:cursor-not-allowed disabled:opacity-70`}
                 >
                   {(hoveredWallet === wallet.id ||
                     connectingWallet === wallet.id) && (

@@ -20,3 +20,4 @@ export * from "./admin-reviews";
 export * from "./user";
 
 export type { DashboardMetrics, DashboardApiResponse } from "./dashboard";
+export * from "./analytics";

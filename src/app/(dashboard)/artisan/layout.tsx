@@ -15,7 +15,8 @@ export default function ArtisanLayout({
 					<Sidebar />
 
 					{/* Main Content */}
-					<main className='flex-1 lg:ml-0'>
+					{/* pt-16 on mobile clears the fixed hamburger button (top-4 = 1rem + button ~2.5rem) */}
+					<main className='flex-1 lg:ml-0 pt-16 lg:pt-0'>
 						<div className='container mx-auto p-6 lg:p-8'>{children}</div>
 					</main>
 				</div>

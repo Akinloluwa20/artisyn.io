@@ -7,6 +7,7 @@ import { jobs } from "../dummyjobs";
 import Image from "next/image";
 import bgImg from "../(assets)/bg.png";
 import CompletedJobsList from "./CompletedJobsList";
+import { SkeletonList } from "@/components/ui/skeleton-list";
 
 const EmptyState = ({ text }: { text: string }) => (
   <div className="py-20 text-center text-sm text-gray-500">
@@ -93,7 +94,7 @@ const TabPages = () => {
       </div>
       <div className="mt-4">
         {activeTab === "available" && (
-          <Suspense fallback={<p className="text-center text-sm text-gray-400 py-10">Loading jobs...</p>}>
+          <Suspense fallback={<SkeletonList className="mt-4" count={3} label="Loading jobs" />}>
             <JobCard />
           </Suspense>
         )}

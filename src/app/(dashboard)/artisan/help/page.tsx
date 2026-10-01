@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { Search, ChevronDown, ChevronUp, MessageCircle, FileText, Mail } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, MessageCircle, FileText, Mail, Ticket } from "lucide-react";
+import {
+	TicketForm,
+	type SupportTicketPayload,
+} from "@/components/support/ticket-form";
 
 const faqs = [
 	{
@@ -67,21 +72,51 @@ const faqs = [
 	},
 ];
 
+const ALL_TOPICS = "All topics";
+
+function highlightMatches(text: string, query: string): ReactNode {
+	const term = query.trim();
+	if (!term) return text;
+
+	const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	const parts = text.split(new RegExp(`(${escapedTerm})`, "gi"));
+
+	return parts.map((part, index) =>
+		part.toLowerCase() === term.toLowerCase() ? (
+			<mark key={`${part}-${index}`} className="rounded bg-[#E6E4FF] px-0.5 text-[#4F4CD4]">
+				{part}
+			</mark>
+		) : (
+			part
+		)
+	);
+}
+
 export default function HelpPage() {
 	const [query, setQuery] = useState("");
+	const [topic, setTopic] = useState(ALL_TOPICS);
 	const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+	const [showTicketForm, setShowTicketForm] = useState(false);
 
 	const toggle = (key: string) =>
 		setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
+
+	// No support API exists yet. Swap this for the real endpoint when it
+	// lands — the form handles validation and feedback on its own.
+	const handleSubmitTicket = async (ticket: SupportTicketPayload): Promise<void> => {
+		await new Promise((resolve) => setTimeout(resolve, 1500));
+		console.log("Support ticket submitted:", ticket);
+	};
 
 	const filtered = faqs
 		.map((section) => ({
 			...section,
 			items: section.items.filter(
 				(item) =>
-					!query ||
-					item.question.toLowerCase().includes(query.toLowerCase()) ||
-					item.answer.toLowerCase().includes(query.toLowerCase())
+					(topic === ALL_TOPICS || section.category === topic) &&
+					(!query ||
+						item.question.toLowerCase().includes(query.toLowerCase()) ||
+						item.answer.toLowerCase().includes(query.toLowerCase()))
 			),
 		}))
 		.filter((section) => section.items.length > 0);
@@ -94,15 +129,37 @@ export default function HelpPage() {
 			</div>
 
 			{/* Search */}
-			<div className="relative mb-8">
-				<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-				<input
-					type="text"
-					placeholder="Search help articles..."
-					value={query}
-					onChange={(e) => setQuery(e.target.value)}
-					className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#605DEC] focus:border-transparent"
-				/>
+			<div className="mb-8 space-y-3">
+				<div className="relative">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+					<label htmlFor="help-search" className="sr-only">
+						Search help articles
+					</label>
+					<input
+						id="help-search"
+						type="search"
+						placeholder="Search help articles..."
+						value={query}
+						onChange={(e) => setQuery(e.target.value)}
+						className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#605DEC] focus:border-transparent"
+					/>
+				</div>
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+					<label htmlFor="help-topic" className="text-sm font-medium text-gray-700">
+						Filter by topic
+					</label>
+					<select
+						id="help-topic"
+						value={topic}
+						onChange={(e) => setTopic(e.target.value)}
+						className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#605DEC]"
+					>
+						<option>{ALL_TOPICS}</option>
+						{faqs.map((section) => (
+							<option key={section.category}>{section.category}</option>
+						))}
+					</select>
+				</div>
 			</div>
 
 			{/* FAQ Sections */}
@@ -123,7 +180,9 @@ export default function HelpPage() {
 												onClick={() => toggle(key)}
 												className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
 											>
-												<span className="text-sm font-medium text-gray-900">{item.question}</span>
+														<span className="text-sm font-medium text-gray-900">
+															{highlightMatches(item.question, query)}
+														</span>
 												{isOpen ? (
 													<ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0 ml-3" />
 												) : (
@@ -132,7 +191,7 @@ export default function HelpPage() {
 											</button>
 											{isOpen && (
 												<div className="px-5 pb-4 text-sm text-gray-600 leading-relaxed">
-													{item.answer}
+															{highlightMatches(item.answer, query)}
 												</div>
 											)}
 										</div>
@@ -153,9 +212,19 @@ export default function HelpPage() {
 				<h2 className="text-lg font-semibold text-gray-900 mb-1">Still need help?</h2>
 				<p className="text-sm text-gray-600 mb-5">Our support team is here to assist you.</p>
 				<div className="flex flex-wrap gap-3">
+					<button
+						type="button"
+						onClick={() => setShowTicketForm((open) => !open)}
+						aria-expanded={showTicketForm}
+						aria-controls="help-ticket-form"
+						className="flex items-center gap-2 bg-[#605DEC] text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-[#4f4cd4] transition-colors"
+					>
+						<Ticket className="w-4 h-4" />
+						Submit a Support Ticket
+					</button>
 					<Link
 						href="/contact"
-						className="flex items-center gap-2 bg-[#605DEC] text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-[#4f4cd4] transition-colors"
+						className="flex items-center gap-2 bg-white text-gray-700 text-sm font-medium px-4 py-2.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
 					>
 						<Mail className="w-4 h-4" />
 						Contact Support
@@ -178,6 +247,21 @@ export default function HelpPage() {
 					</a>
 				</div>
 			</div>
+
+			{/* Support ticket form — the same component used on /contact */}
+			{showTicketForm && (
+				<section
+					id="help-ticket-form"
+					aria-label="Support ticket form"
+					className="mt-6 bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
+				>
+					<h2 className="text-lg font-semibold text-gray-900 mb-1">Open a support ticket</h2>
+					<p className="text-sm text-gray-600 mb-5">
+						Tell us what is going wrong and how urgent it is, and we will route it to the right team.
+					</p>
+					<TicketForm onSubmit={handleSubmitTicket} />
+				</section>
+			)}
 		</div>
 	);
 }
