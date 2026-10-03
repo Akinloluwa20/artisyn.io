@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run",
+    "test": "vitest run && tsx --test src/lib/auth/*.test.ts",
     "test:auth": "tsx --test src/lib/auth/*.test.ts && node scripts/auth-e2e.mjs",
     "test:auth:unit": "tsx --test src/lib/auth/*.test.ts",
     "test:auth:e2e": "node scripts/auth-e2e.mjs"

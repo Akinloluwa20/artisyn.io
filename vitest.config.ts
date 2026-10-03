@@ -1,10 +1,13 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, configDefaults } from "vitest/config";
 import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
+    // Auth tests use `node:test` (run via `tsx --test`, see package.json
+    // test:auth:unit) and are not vitest suites.
+    exclude: [...configDefaults.exclude, "src/lib/auth/**"],
   },
   resolve: {
     alias: [
