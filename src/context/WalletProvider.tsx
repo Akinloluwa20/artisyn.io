@@ -20,6 +20,7 @@ import {
   resetStellarConfigCache,
   type StellarNetworkName,
 } from "@/lib/stellar-config";
+import { logout } from "@/lib/auth/client";
 
 const Server = Horizon.Server;
 
@@ -351,6 +352,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const disconnect = useCallback(async () => {
     connectGeneration.current += 1;
     await getKitInstance().disconnect();
+    // Revoke the server session too: disconnecting a wallet must not leave a
+    // valid auth cookie behind.
+    try {
+      await logout();
+    } catch {
+      /* best-effort; the cookie is also cleared on the next expiry */
+    }
     setConnected(false);
     setPublicKey(undefined);
     setWalletName(undefined);

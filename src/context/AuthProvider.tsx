@@ -3,64 +3,144 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import type { Role, Session } from "@/lib/auth/session";
 
-export type Role = "artisan" | "client";
-
-interface AuthState {
-  /** The current user's role, or null when unknown / not yet determined. */
+export interface AuthState {
+  authenticated: boolean;
   role: Role | null;
-  /** Convenience flag derived from `role`. */
-  isAuthenticated: boolean;
+  address: string | null;
+  /** true until the first session bootstrap fetch resolves. */
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
-const STORAGE_KEY = "artisan-onboarding-state";
+type Listener = () => void;
 
-function readRole(): Role | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { accountType?: unknown };
-    const accountType = parsed?.accountType;
-    return accountType === "artisan" || accountType === "client"
-      ? accountType
-      : null;
-  } catch {
-    return null;
-  }
+interface Snapshot {
+  loading: boolean;
+  authenticated: boolean;
+  role: Role | null;
+  address: string | null;
 }
 
-function subscribe(callback: () => void): () => void {
-  if (typeof window === "undefined") return () => {};
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
-}
-
-const getServerSnapshot = (): Role | null => null;
+const UNAUTHENTICATED: Snapshot = {
+  loading: false,
+  authenticated: false,
+  role: null,
+  address: null,
+};
 
 /**
- * Provides the current user's role to the tree. This is the foundation the
- * route-level guards depend on. The role is persisted in localStorage during
- * onboarding (see `accountType` in `artisan-onboarding-state`).
- *
- * `useSyncExternalStore` is used so the value is read from the external store
- * (localStorage) without calling `setState` inside an effect, and the server
- * snapshot is `null` so SSR/hydration stay consistent.
+ * Stable snapshot during SSR / hydration. Module-level constant so React's
+ * `useSyncExternalStore` snapshot-identity check never loops. Protected
+ * surfaces cannot render before the server session is known.
+ */
+const SERVER_SNAPSHOT: Snapshot = {
+  loading: true,
+  authenticated: false,
+  role: null,
+  address: null,
+};
+
+// In-memory external store, mutated only by the bootstrap fetch below. The
+// previous implementation read `artisan-onboarding-state` from localStorage —
+// editable by anyone — this one reads the server-validated session only.
+let snapshot: Snapshot = SERVER_SNAPSHOT;
+const listeners = new Set<Listener>();
+let bootstrapInFlight: Promise<Snapshot> | null = null;
+
+function replace(next: Snapshot): void {
+  snapshot = next;
+  for (const l of listeners) l();
+}
+
+function subscribe(callback: Listener): () => void {
+  listeners.add(callback);
+  return () => {
+    listeners.delete(callback);
+  };
+}
+
+/**
+ * Fetch the current session from the server and publish it into the store.
+ * Concurrent callers share one in-flight request. On any failure the state is
+ * `unauthenticated` — an error never grants access.
+ */
+export function bootstrapSession(): Promise<Snapshot> {
+  if (typeof window === "undefined") return Promise.resolve(SERVER_SNAPSHOT);
+  if (bootstrapInFlight) return bootstrapInFlight;
+  bootstrapInFlight = (async () => {
+    try {
+      const res = await fetch("/api/auth/session", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+        headers: { "Cache-Control": "no-store" },
+      });
+      if (!res.ok) throw new Error(`session bootstrap failed (${res.status})`);
+      const body = (await res.json()) as {
+        authenticated: boolean;
+        address: string | null;
+        role: string | null;
+      };
+      const next: Snapshot = body.authenticated
+        ? {
+            loading: false,
+            authenticated: true,
+            role:
+              body.role === "artisan" || body.role === "client"
+                ? body.role
+                : null,
+            address: body.address ?? null,
+          }
+        : UNAUTHENTICATED;
+      replace(next);
+      return next;
+    } catch {
+      replace(UNAUTHENTICATED);
+      return snapshot;
+    } finally {
+      bootstrapInFlight = null;
+    }
+  })();
+  return bootstrapInFlight;
+}
+
+const getClientSnapshot = (): Snapshot => snapshot;
+
+/**
+ * Provides auth state sourced ONLY from the server-validated session cookie
+ * (`/api/auth/session`). Browser storage is never consulted for authorization;
+ * onboarding progress stays a client-side hint.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const role = useSyncExternalStore(subscribe, readRole, getServerSnapshot);
+  const state = useSyncExternalStore(
+    subscribe,
+    getClientSnapshot,
+    () => SERVER_SNAPSHOT,
+  );
+
+  useEffect(() => {
+    // Hydrate on mount; guard components block protected content while
+    // `loading` is true, so there is no protected-content flash.
+    void bootstrapSession();
+  }, []);
 
   const value: AuthState = {
-    role,
-    isAuthenticated: role !== null,
+    authenticated: state.authenticated,
+    role: state.role,
+    address: state.address,
+    loading: state.loading,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 }
 
 export function useAuth(): AuthState {
@@ -70,3 +150,5 @@ export function useAuth(): AuthState {
   }
   return context;
 }
+
+export type { Session, Role };
