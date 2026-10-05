@@ -46,11 +46,13 @@ export default function CuratorVerificationStatusPage() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const load = useCallback(async () => {
-		setIsLoading(true);
-		setError(null);
+	// Only reaches setState after the `await`, so it is safe to call from an
+	// effect (`react-hooks/set-state-in-effect`). Used by the initial load.
+	const fetchStatus = useCallback(async () => {
 		try {
-			setData(await getCuratorVerificationStatus());
+			const status = await getCuratorVerificationStatus();
+			setData(status);
+			setError(null);
 		} catch (err) {
 			setError(describeLoadError(err));
 		} finally {
@@ -58,31 +60,21 @@ export default function CuratorVerificationStatusPage() {
 		}
 	}, []);
 
+	// Event-handler path for the refresh button: reset the loading/error flags
+	// first (fine from a handler), then refetch.
+	const load = useCallback(async () => {
+		setIsLoading(true);
+		setError(null);
+		await fetchStatus();
+	}, [fetchStatus]);
+
 	useEffect(() => {
-		// Initial load only. The state updates happen after the `await` inside the
-		// inline async IIFE, so nothing is set synchronously in the effect body —
-		// which is what `react-hooks/set-state-in-effect` rejects. The refresh
-		// button below keeps using `load`, which runs as an event handler.
-		let cancelled = false;
-
-		(async () => {
-			try {
-				const status = await getCuratorVerificationStatus();
-				if (!cancelled) {
-					setData(status);
-					setError(null);
-				}
-			} catch (err) {
-				if (!cancelled) setError(describeLoadError(err));
-			} finally {
-				if (!cancelled) setIsLoading(false);
-			}
+		// Initial load only. Awaiting `fetchStatus` keeps every setState after the
+		// await, which is what `react-hooks/set-state-in-effect` requires.
+		void (async () => {
+			await fetchStatus();
 		})();
-
-		return () => {
-			cancelled = true;
-		};
-	}, []);
+	}, [fetchStatus]);
 
 	return (
 		<AuthGuard>
