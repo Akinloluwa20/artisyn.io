@@ -1,3 +1,5 @@
+import { appendCuratorVerificationSubmission } from "@/lib/curator/verification-store";
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,8 +30,21 @@ export async function POST(req: Request) {
     return Response.json({ message: "Please fix the highlighted fields.", errors }, { status: 400 });
   }
 
+  const submittedAt = new Date().toISOString();
+  const record = {
+    id: `${Date.now()}`,
+    status: "pending" as const,
+    submittedAt,
+    fullName: text("fullName"),
+    specialization: text("specialization"),
+  };
+
+  // Persist the submission so `/api/curator/verification/status` can show it in
+  // the curator's history.
+  await appendCuratorVerificationSubmission(record);
+
   return Response.json(
-    { id: `${Date.now()}`, status: "pending", submittedAt: new Date().toISOString() },
+    { id: record.id, status: record.status, submittedAt: record.submittedAt },
     { status: 201 },
   );
 }

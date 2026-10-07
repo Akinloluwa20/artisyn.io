@@ -6,11 +6,21 @@ import React, {
   useState,
   useCallback,
   useRef,
+  useEffect,
   ReactNode,
 } from "react";
-import { Horizon, Networks } from "@stellar/stellar-sdk";
+import { Horizon } from "@stellar/stellar-sdk";
 import { ISupportedWallet } from "@creit.tech/stellar-wallets-kit";
-import { kit as getKitInstance } from "@/lib/stellar-wallets-kit";
+import {
+  getKit as getKitInstance,
+  resetKit,
+} from "@/lib/stellar-wallets-kit";
+import {
+  getStellarConfig,
+  resetStellarConfigCache,
+  type StellarNetworkName,
+} from "@/lib/stellar-config";
+import { logout } from "@/lib/auth/client";
 
 const Server = Horizon.Server;
 
@@ -77,7 +87,9 @@ interface WalletContextState {
 
 interface WalletConfigContextState {
   horizonUrl: string;
-  network: string;
+  network: StellarNetworkName;
+  networkPassphrase: string;
+  explorerUrl: string;
 }
 
 const WalletContext = createContext<WalletContextState | undefined>(undefined);
@@ -185,15 +197,15 @@ async function withTimeout<T>(
   }
 }
 
-export function WalletProvider({
-  children,
-  horizonUrl = "https://horizon-testnet.stellar.org",
-  network = Networks.TESTNET,
-}: {
-  children: ReactNode;
-  horizonUrl?: string;
-  network?: string;
-}) {
+/**
+ * Wallet provider wired to the single typed Stellar configuration: the Horizon
+ * server used for balance reads and the wallet kit used for signing are both
+ * constructed from `getStellarConfig()`, so they can never target different
+ * networks (issue #204). There are no per-instance network props anymore —
+ * configuring the environment is the only supported way to switch networks.
+ */
+export function WalletProvider({ children }: { children: ReactNode }) {
+  const config = getStellarConfig();
   const [connected, setConnected] = useState(false);
   const [publicKey, setPublicKey] = useState<string>();
   const [walletName, setWalletName] = useState<string>();
@@ -205,8 +217,19 @@ export function WalletProvider({
   const [lastAttemptedWalletId, setLastAttemptedWalletId] = useState<
     string | undefined
   >();
-  const [server] = useState(() => new Server(horizonUrl));
+  const [server] = useState(() => new Server(config.horizonUrl));
   const connectGeneration = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      // If the environment changed during this app's lifetime, drop cached
+      // config + kit so the next mount rebuilds from the new environment.
+      if (getStellarConfig() !== config) {
+        resetStellarConfigCache();
+        resetKit();
+      }
+    };
+  }, [config]);
 
   const clearConnectionFeedback = useCallback(() => {
     setConnectionError(null);
@@ -329,6 +352,13 @@ export function WalletProvider({
   const disconnect = useCallback(async () => {
     connectGeneration.current += 1;
     await getKitInstance().disconnect();
+    // Revoke the server session too: disconnecting a wallet must not leave a
+    // valid auth cookie behind.
+    try {
+      await logout();
+    } catch {
+      /* best-effort; the cookie is also cleared on the next expiry */
+    }
     setConnected(false);
     setPublicKey(undefined);
     setWalletName(undefined);
@@ -349,7 +379,14 @@ export function WalletProvider({
   }, [publicKey, server]);
 
   return (
-    <WalletConfigContext.Provider value={{ horizonUrl, network }}>
+    <WalletConfigContext.Provider
+      value={{
+        horizonUrl: config.horizonUrl,
+        network: config.network,
+        networkPassphrase: config.networkPassphrase,
+        explorerUrl: config.explorerUrl,
+      }}
+    >
       <WalletContext.Provider
         value={{
           connected,
@@ -374,5 +411,18 @@ export function WalletProvider({
 export const useWallet = () => {
   const context = useContext(WalletContext);
   if (!context) throw new Error("useWallet must be used within WalletProvider");
+  return context;
+};
+
+/**
+ * Read the active, validated Stellar configuration from React context. This is
+ * the single source of truth every component should use instead of reading env
+ * vars or constructing network strings directly.
+ */
+export const useStellarConfig = (): WalletConfigContextState => {
+  const context = useContext(WalletConfigContext);
+  if (!context) {
+    throw new Error("useStellarConfig must be used within WalletProvider");
+  }
   return context;
 };

@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const accountTypeContent = [
@@ -22,6 +22,7 @@ const AccountType = () => {
   const [selectedAccountType, setSelectedAccountType] = useState<string | null>(
     null,
   );
+  const router = useRouter();
   return (
     // Added 'min-h-screen' to ensure full height on mobile
     <div className="flex flex-col justify-center items-center min-h-screen bg-white">
@@ -75,14 +76,15 @@ const AccountType = () => {
           <button
             className="w-full lg:w-auto bg-[#605DEC] py-3 px-8 rounded-lg mt-10 cursor-pointer hover:bg-[#605DEC]/80 text-white disabled:cursor-not-allowed disabled:bg-[#605DEC]/80 transition-colors"
             disabled={!selectedAccountType}
+            onClick={() => {
+              if (!selectedAccountType) return;
+              const accountType =
+                selectedAccountType === "I'm an artisian " ? "artisan" : "client";
+              router.push(`/profile-setup/account-type?type=${accountType}`);
+            }}
           >
-            <Link href="/profile-setup/account-type">
-              {" "}
-              Continue as{" "}
-              {selectedAccountType === "I'm an artisian "
-                ? "Artisan"
-                : "Client"}
-            </Link>
+            Continue as{" "}
+            {selectedAccountType === "I'm an artisian " ? "Artisan" : "Client"}
           </button>
         </div>
         <div className="hidden lg:block w-1/2 h-screen sticky top-0 relative">

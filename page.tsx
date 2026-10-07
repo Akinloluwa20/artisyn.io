@@ -99,7 +99,7 @@ export default function ArtisanFeedbackPage() {
       <section className="bg-gray-50 rounded-xl p-6 mb-8 border border-dashed border-gray-300">
         <h2 className="text-lg font-semibold mb-4 text-gray-900">Add New Feedback</h2>
         <form onSubmit={handleAddFeedback} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input
               type="text"
               placeholder="Your Name"
