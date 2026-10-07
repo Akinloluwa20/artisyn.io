@@ -24,7 +24,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # jsdom 30 (used by the jsdom test project) requires Node >=22.22.
+          node-version: '24'
           cache: 'pnpm'
           cache-dependency-path: pnpm-lock.yaml 
 
