@@ -1,14 +1,21 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, configDefaults } from "vitest/config";
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 /**
  * Vitest configuration.
  *
- * - `jsdom` gives component tests a DOM without a browser or live services.
- * - `vite-tsconfig-paths` honours the `@/*` alias from tsconfig.
- * - `src/test/setup.ts` installs jest-dom matchers and the browser polyfills
- *   the app's Radix/Next components expect.
+ * Two projects share one runner:
+ *
+ * - `node`  — the pure/node suites (API client + services, Stellar config).
+ *   The real wallet kit pulls in browser SDKs that do not load under a node
+ *   environment, so it is aliased to a lightweight stub (see
+ *   `test/stubs/stellar-wallets-kit.ts`). The `node:test` auth suites run via
+ *   `tsx --test` and are excluded here.
+ * - `jsdom` — the React component/provider suites, with `src/test/setup.ts`
+ *   installing jest-dom matchers, deterministic Next stubs and the browser
+ *   polyfills Radix/Next expect.
  *
  * Coverage is intentionally scoped to the critical shared modules this stack
  * was introduced to protect (API client and its services, auth/role guards,
@@ -19,9 +26,42 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
-    environment: "jsdom",
-    setupFiles: ["./src/test/setup.ts"],
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    projects: [
+      {
+        // Inherit plugins/coverage from the root config.
+        extends: true,
+        resolve: {
+          alias: [
+            {
+              // The real kit pulls in browser wallet SDKs that do not load in a
+              // node test environment. The stub mirrors the 1.9.5 surface we
+              // depend on.
+              find: "@creit.tech/stellar-wallets-kit",
+              replacement: fileURLToPath(
+                new URL("./test/stubs/stellar-wallets-kit.ts", import.meta.url),
+              ),
+            },
+          ],
+        },
+        test: {
+          name: "node",
+          environment: "node",
+          include: ["src/**/*.test.ts"],
+          // Auth tests use `node:test` (run via `tsx --test`, see package.json
+          // test:auth:unit) and are not vitest suites.
+          exclude: [...configDefaults.exclude, "src/lib/auth/**"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "jsdom",
+          environment: "jsdom",
+          setupFiles: ["./src/test/setup.ts"],
+          include: ["src/**/*.test.tsx"],
+        },
+      },
+    ],
     clearMocks: true,
     restoreMocks: true,
     coverage: {

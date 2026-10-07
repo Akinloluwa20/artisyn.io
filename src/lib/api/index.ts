@@ -10,6 +10,7 @@ export { ApiClientError } from "./errors";
 export * from "./account-links";
 export * from "./applications";
 export * from "./artisans";
+export * from "./availability";
 export * from "./curator";
 export * from "./gdpr";
 export * from "./jobs";

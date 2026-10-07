@@ -9,11 +9,14 @@ lightweight: it needs no browser, no running API, and no wallet extension.
 
 | Command | What it does |
 | --- | --- |
-| `pnpm test` | Run every suite once. |
-| `pnpm test:watch` | Re-run touched suites while developing. |
-| `pnpm test:coverage` | Run with the coverage floor enforced (used in CI). |
+| `pnpm test` | Run all Vitest suites, then the `node:test` auth suites. |
+| `pnpm test:watch` | Re-run touched Vitest suites while developing. |
+| `pnpm test:coverage` | Run every suite with the coverage floor enforced (used in CI). |
+| `pnpm test:auth:unit` | Run just the `node:test` auth suites (`tsx --test`). |
+| `pnpm test:auth:e2e` | Run the auth end-to-end script (`scripts/auth-e2e.mjs`). |
 | `pnpm typecheck` | Type-check the project with `tsc --noEmit`. |
 | `pnpm lint` | ESLint. |
+| `pnpm build` | Production build (also type-checks). |
 
 `pnpm test` must pass locally and in CI without any external services.
 
@@ -28,8 +31,18 @@ src/components/auth/role-guard.tsx
                              → src/components/auth/role-guard.test.tsx
 ```
 
-Test files are picked up by the `src/**/*.{test,spec}.{ts,tsx}` glob in
-`vitest.config.ts`. They are also type-checked, so keep them well typed.
+Vitest runs two projects (see `vitest.config.ts`):
+
+- **`node`** — plain `*.test.ts` suites (API client/services, Stellar config)
+  run without a DOM. The real wallet kit is aliased to
+  `test/stubs/stellar-wallets-kit.ts` here because its browser SDKs do not load
+  in a node environment.
+- **`jsdom`** — React `*.test.tsx` suites, with `src/test/setup.ts` installing
+  jest-dom matchers, deterministic Next stubs and browser polyfills.
+
+The `node:test` auth suites (`src/lib/auth/*.test.ts`) are not Vitest suites;
+they run via `tsx --test` and are exercised by `pnpm test:coverage`. All test
+files are type-checked, so keep them well typed.
 
 ## Conventions
 
@@ -74,7 +87,7 @@ that regressions most often break.
 ### Cover the critical paths
 
 The coverage floor in `vitest.config.ts` is scoped to the shared modules
-where regressions are most costly:
+where regressions are most costly (both Vitest projects report into it):
 
 - the shared API client (`src/lib/api/client.ts`) and its normalized errors,
 - auth and role guards across loading / authorized / unauthorized /

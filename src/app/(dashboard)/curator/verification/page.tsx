@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 import { AuthGuard } from "@/components/auth/auth-guard";
@@ -118,6 +119,12 @@ export default function CuratorVerificationPage() {
 								<p className="mt-1 text-sm">
 									Your verification request (#{submittedId}) is pending review.
 								</p>
+								<Link
+									href="/curator/verification/status"
+									className="mt-3 inline-block text-sm font-medium underline underline-offset-2"
+								>
+									View verification status
+								</Link>
 							</div>
 						</section>
 					) : (

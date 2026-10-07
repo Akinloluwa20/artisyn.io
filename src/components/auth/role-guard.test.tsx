@@ -6,7 +6,11 @@ import { RoleGuard } from "./role-guard";
 const mocks = vi.hoisted(() => ({
   replace: vi.fn(),
   push: vi.fn(),
-  auth: { role: null as "artisan" | "client" | null, isAuthenticated: false },
+  auth: {
+    authenticated: false,
+    role: null as "artisan" | "client" | null,
+    loading: true,
+  },
 }));
 
 vi.mock("next/navigation", () => ({
@@ -17,13 +21,21 @@ vi.mock("@/context/AuthProvider", () => ({
   useAuth: () => mocks.auth,
 }));
 
+function setAuth(next: {
+  authenticated: boolean;
+  role: "artisan" | "client" | null;
+  loading: boolean;
+}) {
+  mocks.auth = next;
+}
+
 beforeEach(() => {
-  mocks.auth = { role: null, isAuthenticated: false };
+  setAuth({ authenticated: false, role: null, loading: true });
   mocks.replace.mockReset();
 });
 
 describe("RoleGuard", () => {
-  it("shows a loader while the role is unresolved", () => {
+  it("shows a loader and does not redirect while the session is loading", () => {
     render(
       <RoleGuard allowedRoles={["artisan"]}>
         <div>Artisan only</div>
@@ -32,11 +44,11 @@ describe("RoleGuard", () => {
 
     expect(screen.getByText("Loading…")).toBeInTheDocument();
     expect(screen.queryByText("Artisan only")).not.toBeInTheDocument();
-    expect(mocks.replace).toHaveBeenCalledWith("/");
+    expect(mocks.replace).not.toHaveBeenCalled();
   });
 
   it("renders children for an allowed role", () => {
-    mocks.auth = { role: "artisan", isAuthenticated: true };
+    setAuth({ authenticated: true, role: "artisan", loading: false });
 
     render(
       <RoleGuard allowedRoles={["artisan"]}>
@@ -49,7 +61,7 @@ describe("RoleGuard", () => {
   });
 
   it("redirects an authenticated user to their own role home", () => {
-    mocks.auth = { role: "client", isAuthenticated: true };
+    setAuth({ authenticated: true, role: "client", loading: false });
 
     render(
       <RoleGuard allowedRoles={["artisan"]}>
@@ -62,7 +74,9 @@ describe("RoleGuard", () => {
     expect(mocks.replace).toHaveBeenCalledWith("/client/dashboard");
   });
 
-  it("redirects an unauthenticated user to the public home", () => {
+  it("redirects a signed-out user to the public home", () => {
+    setAuth({ authenticated: false, role: null, loading: false });
+
     render(
       <RoleGuard allowedRoles={["artisan"]}>
         <div>Artisan only</div>
@@ -73,7 +87,7 @@ describe("RoleGuard", () => {
   });
 
   it("honours an explicit redirect target", () => {
-    mocks.auth = { role: "client", isAuthenticated: true };
+    setAuth({ authenticated: true, role: "client", loading: false });
 
     render(
       <RoleGuard allowedRoles={["artisan"]} redirectTo="/for-artisans">

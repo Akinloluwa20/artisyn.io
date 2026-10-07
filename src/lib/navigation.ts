@@ -1,4 +1,4 @@
-import type { Role } from "@/context/AuthProvider";
+import type { Role } from "@/lib/auth/session";
 
 /** Post-onboarding dashboard destinations, keyed by user role. */
 export const ROLE_DASHBOARD_ROUTES: Record<Role, string> = {

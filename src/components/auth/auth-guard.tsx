@@ -3,7 +3,6 @@
 import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
-import { useWallet } from "@/context/WalletProvider";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -12,35 +11,31 @@ interface AuthGuardProps {
 }
 
 /**
- * Restricts access to its children to users who have either an established
- * role (persisted from onboarding) or an actively connected wallet.
+ * Restricts access to its children to users with a validated server session.
  *
- * This is a broader check than `RoleGuard`: it only verifies that the user
- * has entered the app through the wallet connection flow, without caring
- * which role they hold. Unauthenticated users are redirected to the connect
- * wallet route so they can start that flow.
- *
- * `isAuthenticated` is checked in addition to `connected` because the wallet
- * provider's connection state is session-only and does not survive a page
- * reload, while the resolved role is persisted in localStorage.
+ * Authorization is based ONLY on the server-validated session cookie — never on
+ * localStorage or a bare wallet connection. While the session is hydrating (the
+ * first bootstrap fetch), protected content is withheld so editing browser
+ * storage cannot flash a protected surface. Once hydrated, an unauthenticated
+ * user is redirected to the wallet-connection flow.
  */
 export function AuthGuard({
   children,
   redirectTo = "/connect-wallet",
 }: AuthGuardProps) {
-  const { isAuthenticated } = useAuth();
-  const { connected } = useWallet();
+  const { authenticated, loading } = useAuth();
   const router = useRouter();
 
-  const authorized = isAuthenticated || connected;
+  const authorized = authenticated && !loading;
 
   useEffect(() => {
-    if (!authorized) {
+    if (!loading && !authorized) {
       router.replace(redirectTo);
     }
-  }, [authorized, redirectTo, router]);
+  }, [loading, authorized, redirectTo, router]);
 
-  if (!authorized) {
+  // Hydration: withhold content pending the server session response.
+  if (loading || !authorized) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-gray-500">
         Redirecting…

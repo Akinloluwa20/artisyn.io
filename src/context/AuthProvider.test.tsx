@@ -1,15 +1,25 @@
-import { act, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { AuthProvider, useAuth } from "./AuthProvider";
+import { AuthProvider, bootstrapSession, useAuth } from "./AuthProvider";
 
-const STORAGE_KEY = "artisan-onboarding-state";
+const fetchMock = vi.fn();
 
-function RoleProbe() {
-  const { role, isAuthenticated } = useAuth();
+vi.stubGlobal("fetch", fetchMock);
+
+function sessionResponse(body: Record<string, unknown>) {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    statusText: "OK",
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function Probe() {
+  const { role, authenticated, address, loading } = useAuth();
   return (
     <div data-testid="probe">
-      {role ?? "none"}:{String(isAuthenticated)}
+      {`${role ?? "none"}|${authenticated}|${loading}|${address ?? "none"}`}
     </div>
   );
 }
@@ -17,96 +27,134 @@ function RoleProbe() {
 function renderProvider() {
   return render(
     <AuthProvider>
-      <RoleProbe />
+      <Probe />
     </AuthProvider>,
   );
 }
 
 beforeEach(() => {
-  window.localStorage.clear();
+  fetchMock.mockReset();
 });
 
+/**
+ * The provider reads from a module-level session store, so the first test runs
+ * against the pristine SSR snapshot (`loading: true`). Later tests drive the
+ * store to a resolved state and assert the eventual value.
+ */
 describe("AuthProvider", () => {
-  it("resolves to no role while the session is loading (empty storage)", () => {
-    renderProvider();
-
-    expect(screen.getByTestId("probe")).toHaveTextContent("none:false");
-  });
-
-  it("reads the persisted artisan role", () => {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ accountType: "artisan" }),
+  it("withholds the session while the bootstrap fetch is in flight", async () => {
+    let resolveFetch!: (value: Response) => void;
+    fetchMock.mockReturnValue(
+      new Promise<Response>((resolve) => {
+        resolveFetch = resolve;
+      }),
     );
 
     renderProvider();
 
-    expect(screen.getByTestId("probe")).toHaveTextContent("artisan:true");
+    expect(screen.getByTestId("probe")).toHaveTextContent("none|false|true|none");
+
+    resolveFetch(
+      sessionResponse({ authenticated: true, address: "GARTISAN", role: "artisan" }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId("probe")).toHaveTextContent(
+        "artisan|true|false|GARTISAN",
+      ),
+    );
   });
 
-  it("reads the persisted client role", () => {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ accountType: "client", completed: true }),
+  it("resolves an authenticated artisan session", async () => {
+    fetchMock.mockResolvedValue(
+      sessionResponse({ authenticated: true, address: "GARTISAN", role: "artisan" }),
     );
 
     renderProvider();
 
-    expect(screen.getByTestId("probe")).toHaveTextContent("client:true");
+    await waitFor(() =>
+      expect(screen.getByTestId("probe")).toHaveTextContent(
+        "artisan|true|false|GARTISAN",
+      ),
+    );
   });
 
-  it("treats a corrupt session as unauthenticated", () => {
-    window.localStorage.setItem(STORAGE_KEY, "{not json");
-
-    renderProvider();
-
-    expect(screen.getByTestId("probe")).toHaveTextContent("none:false");
-  });
-
-  it("treats an unknown account type as unauthenticated", () => {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ accountType: "admin" }),
+  it("resolves an authenticated client session", async () => {
+    fetchMock.mockResolvedValue(
+      sessionResponse({ authenticated: true, address: "GCLIENT", role: "client" }),
     );
 
     renderProvider();
 
-    expect(screen.getByTestId("probe")).toHaveTextContent("none:false");
+    await waitFor(() =>
+      expect(screen.getByTestId("probe")).toHaveTextContent(
+        "client|true|false|GCLIENT",
+      ),
+    );
   });
 
-  it("clears the role when the session expires in another tab", () => {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ accountType: "artisan" }),
+  it("nulls an unrecognized server role", async () => {
+    fetchMock.mockResolvedValue(
+      sessionResponse({ authenticated: true, address: "GADMIN", role: "admin" }),
     );
-    renderProvider();
-    expect(screen.getByTestId("probe")).toHaveTextContent("artisan:true");
 
-    act(() => {
-      window.localStorage.removeItem(STORAGE_KEY);
-      window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY }));
+    renderProvider();
+
+    await waitFor(() =>
+      expect(screen.getByTestId("probe")).toHaveTextContent(
+        "none|true|false|GADMIN",
+      ),
+    );
+  });
+
+  it("treats an unauthenticated session as signed out", async () => {
+    fetchMock.mockResolvedValue(
+      sessionResponse({ authenticated: false, address: null, role: null }),
+    );
+
+    renderProvider();
+
+    await waitFor(() =>
+      expect(screen.getByTestId("probe")).toHaveTextContent("none|false|false|none"),
+    );
+  });
+
+  it("treats a failed bootstrap request as signed out", async () => {
+    fetchMock.mockRejectedValue(new Error("network down"));
+
+    renderProvider();
+
+    await waitFor(() =>
+      expect(screen.getByTestId("probe")).toHaveTextContent("none|false|false|none"),
+    );
+  });
+
+  it("drops an expired session and returns to signed out", async () => {
+    fetchMock.mockResolvedValue(
+      sessionResponse({ authenticated: true, address: "GARTISAN", role: "artisan" }),
+    );
+
+    renderProvider();
+    await waitFor(() =>
+      expect(screen.getByTestId("probe")).toHaveTextContent(
+        "artisan|true|false|GARTISAN",
+      ),
+    );
+
+    // The cookie expires and the next bootstrap resolves signed out.
+    fetchMock.mockResolvedValue(
+      sessionResponse({ authenticated: false, address: null, role: null }),
+    );
+
+    await act(async () => {
+      await bootstrapSession();
     });
 
-    expect(screen.getByTestId("probe")).toHaveTextContent("none:false");
-  });
-
-  it("picks up a role established in another tab", () => {
-    renderProvider();
-    expect(screen.getByTestId("probe")).toHaveTextContent("none:false");
-
-    act(() => {
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ accountType: "client" }),
-      );
-      window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY }));
-    });
-
-    expect(screen.getByTestId("probe")).toHaveTextContent("client:true");
+    expect(screen.getByTestId("probe")).toHaveTextContent("none|false|false|none");
   });
 
   it("throws when useAuth is used outside the provider", () => {
-    expect(() => render(<RoleProbe />)).toThrow(
+    expect(() => render(<Probe />)).toThrow(
       "useAuth must be used within an AuthProvider",
     );
   });

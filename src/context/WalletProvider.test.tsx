@@ -15,12 +15,33 @@ const kitMock = vi.hoisted(() => ({
   options: { modules: [{ id: "freighter", name: "Freighter" }] },
 }));
 
+const logoutMock = vi.hoisted(() => vi.fn());
+
 vi.mock("@/lib/stellar-wallets-kit", () => ({
+  getKit: () => kitMock,
   kit: () => kitMock,
+  resetKit: vi.fn(),
 }));
 
+vi.mock("@/lib/auth/client", () => ({
+  logout: logoutMock,
+}));
+
+// Stable config object so the provider's change-detection effect is a no-op.
+vi.mock("@/lib/stellar-config", () => {
+  const config = {
+    network: "testnet" as const,
+    networkPassphrase: "Test SDF Network ; September 2015",
+    horizonUrl: "https://horizon-testnet.stellar.org",
+    explorerUrl: "https://stellar.expert/explorer/testnet",
+  };
+  return {
+    getStellarConfig: () => config,
+    resetStellarConfigCache: vi.fn(),
+  };
+});
+
 vi.mock("@stellar/stellar-sdk", () => ({
-  Networks: { TESTNET: "TESTNET" },
   Horizon: {
     Server: class {
       accounts() {
@@ -70,6 +91,8 @@ beforeEach(() => {
   kitMock.getAddress.mockReset();
   kitMock.openModal.mockReset();
   kitMock.disconnect.mockReset();
+  logoutMock.mockReset();
+  logoutMock.mockResolvedValue(undefined);
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
@@ -181,7 +204,7 @@ describe("WalletProvider", () => {
     expect(walletApi.connectionStatus).toBe("idle");
   });
 
-  it("disconnects cleanly and clears persisted wallet state", async () => {
+  it("disconnects cleanly, revokes the session and clears persisted state", async () => {
     kitMock.getAddress.mockResolvedValue({ address: "GADDRESS" });
     kitMock.disconnect.mockResolvedValue(undefined);
     renderProvider();
@@ -196,6 +219,7 @@ describe("WalletProvider", () => {
     });
 
     expect(kitMock.disconnect).toHaveBeenCalledTimes(1);
+    expect(logoutMock).toHaveBeenCalledTimes(1);
     expect(walletApi.connected).toBe(false);
     expect(walletApi.publicKey).toBeUndefined();
     expect(walletApi.balances).toEqual([]);

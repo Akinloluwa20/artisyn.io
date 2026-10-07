@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AvailabilityDayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model Artisan {
+  id            String                @id @default(cuid())
+  email         String                @unique
+  displayName   String?
+  timezone      String                @default("UTC")
+  availability  ArtisanAvailability?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+}
+
+model ArtisanAvailability {
+  id         String                 @id @default(cuid())
+  artisanId  String                 @unique
+  artisan    Artisan                @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  timezone   String                 @default("UTC")
+  intervals  AvailabilityInterval[]
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+}
+
+model AvailabilityInterval {
+  id              String                 @id @default(cuid())
+  availabilityId  String
+  availability    ArtisanAvailability    @relation(fields: [availabilityId], references: [id], onDelete: Cascade)
+  dayOfWeek       AvailabilityDayOfWeek
+  startTime       String
+  endTime         String
+  createdAt       DateTime               @default(now())
+
+  @@unique([availabilityId, dayOfWeek])
+}
